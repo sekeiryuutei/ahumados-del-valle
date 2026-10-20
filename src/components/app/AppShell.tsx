@@ -1,4 +1,4 @@
-import { Link, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
+import { Link, Navigate, Outlet, useNavigate, type LinkProps } from "@tanstack/react-router";
 import { LogOut, ShieldAlert, type LucideIcon } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ import {
 import { Loading } from "./ui-bits";
 
 export interface NavItem {
-  to: string;
+  to: LinkProps["to"];
   label: string;
   icon: LucideIcon;
   exact?: boolean;
