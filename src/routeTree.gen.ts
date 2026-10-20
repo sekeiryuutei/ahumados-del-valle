@@ -12,6 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as InquilinoRouteImport } from './routes/inquilino'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAjustesRouteImport } from './routes/admin.ajustes'
+import { Route as AdminInquilinosRouteImport } from './routes/admin.inquilinos'
+import { Route as AdminLocalesRouteImport } from './routes/admin.locales'
+import { Route as AdminPagosRouteImport } from './routes/admin.pagos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,34 +33,97 @@ const InquilinoRoute = InquilinoRouteImport.update({
   path: '/inquilino',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAjustesRoute = AdminAjustesRouteImport.update({
+  id: '/ajustes',
+  path: '/ajustes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInquilinosRoute = AdminInquilinosRouteImport.update({
+  id: '/inquilinos',
+  path: '/inquilinos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLocalesRoute = AdminLocalesRouteImport.update({
+  id: '/locales',
+  path: '/locales',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPagosRoute = AdminPagosRouteImport.update({
+  id: '/pagos',
+  path: '/pagos',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/inquilino': typeof InquilinoRoute
+  '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/locales': typeof AdminLocalesRoute
+  '/admin/pagos': typeof AdminPagosRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/inquilino': typeof InquilinoRoute
+  '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/locales': typeof AdminLocalesRoute
+  '/admin/pagos': typeof AdminPagosRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/inquilino': typeof InquilinoRoute
+  '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/locales': typeof AdminLocalesRoute
+  '/admin/pagos': typeof AdminPagosRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/inquilino'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/inquilino'
+    | '/admin/ajustes'
+    | '/admin/inquilinos'
+    | '/admin/locales'
+    | '/admin/pagos'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/inquilino'
-  id: '__root__' | '/' | '/admin' | '/inquilino'
+  to:
+    | '/'
+    | '/inquilino'
+    | '/admin/ajustes'
+    | '/admin/inquilinos'
+    | '/admin/locales'
+    | '/admin/pagos'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/inquilino'
+    | '/admin/ajustes'
+    | '/admin/inquilinos'
+    | '/admin/locales'
+    | '/admin/pagos'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   InquilinoRoute: typeof InquilinoRoute
 }
 
@@ -82,12 +150,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InquilinoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ajustes': {
+      id: '/admin/ajustes'
+      path: '/ajustes'
+      fullPath: '/admin/ajustes'
+      preLoaderRoute: typeof AdminAjustesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inquilinos': {
+      id: '/admin/inquilinos'
+      path: '/inquilinos'
+      fullPath: '/admin/inquilinos'
+      preLoaderRoute: typeof AdminInquilinosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/locales': {
+      id: '/admin/locales'
+      path: '/locales'
+      fullPath: '/admin/locales'
+      preLoaderRoute: typeof AdminLocalesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pagos': {
+      id: '/admin/pagos'
+      path: '/pagos'
+      fullPath: '/admin/pagos'
+      preLoaderRoute: typeof AdminPagosRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminAjustesRoute: typeof AdminAjustesRoute
+  AdminInquilinosRoute: typeof AdminInquilinosRoute
+  AdminLocalesRoute: typeof AdminLocalesRoute
+  AdminPagosRoute: typeof AdminPagosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAjustesRoute: AdminAjustesRoute,
+  AdminInquilinosRoute: AdminInquilinosRoute,
+  AdminLocalesRoute: AdminLocalesRoute,
+  AdminPagosRoute: AdminPagosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   InquilinoRoute: InquilinoRoute,
 }
 export const routeTree = rootRouteImport
