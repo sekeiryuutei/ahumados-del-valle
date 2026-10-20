@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as InquilinoRouteImport } from './routes/inquilino'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAjustesRouteImport } from './routes/admin.ajustes'
+import { Route as AdminInquilinosRouteImport } from './routes/admin.inquilinos'
+import { Route as AdminLocalesRouteImport } from './routes/admin.locales'
+import { Route as AdminPagosRouteImport } from './routes/admin.pagos'
+import { Route as InquilinoIndexRouteImport } from './routes/inquilino.index'
+import { Route as InquilinoDisponiblesRouteImport } from './routes/inquilino.disponibles'
+import { Route as InquilinoHistorialRouteImport } from './routes/inquilino.historial'
+import { Route as InquilinoPagarRouteImport } from './routes/inquilino.pagar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InquilinoRoute = InquilinoRouteImport.update({
+  id: '/inquilino',
+  path: '/inquilino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAjustesRoute = AdminAjustesRouteImport.update({
+  id: '/ajustes',
+  path: '/ajustes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInquilinosRoute = AdminInquilinosRouteImport.update({
+  id: '/inquilinos',
+  path: '/inquilinos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLocalesRoute = AdminLocalesRouteImport.update({
+  id: '/locales',
+  path: '/locales',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPagosRoute = AdminPagosRouteImport.update({
+  id: '/pagos',
+  path: '/pagos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const InquilinoIndexRoute = InquilinoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InquilinoRoute,
+} as any)
+const InquilinoDisponiblesRoute = InquilinoDisponiblesRouteImport.update({
+  id: '/disponibles',
+  path: '/disponibles',
+  getParentRoute: () => InquilinoRoute,
+} as any)
+const InquilinoHistorialRoute = InquilinoHistorialRouteImport.update({
+  id: '/historial',
+  path: '/historial',
+  getParentRoute: () => InquilinoRoute,
+} as any)
+const InquilinoPagarRoute = InquilinoPagarRouteImport.update({
+  id: '/pagar',
+  path: '/pagar',
+  getParentRoute: () => InquilinoRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/inquilino': typeof InquilinoRouteWithChildren
+  '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/locales': typeof AdminLocalesRoute
+  '/admin/pagos': typeof AdminPagosRoute
+  '/inquilino/disponibles': typeof InquilinoDisponiblesRoute
+  '/inquilino/historial': typeof InquilinoHistorialRoute
+  '/inquilino/pagar': typeof InquilinoPagarRoute
+  '/admin/': typeof AdminIndexRoute
+  '/inquilino/': typeof InquilinoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/locales': typeof AdminLocalesRoute
+  '/admin/pagos': typeof AdminPagosRoute
+  '/inquilino/disponibles': typeof InquilinoDisponiblesRoute
+  '/inquilino/historial': typeof InquilinoHistorialRoute
+  '/inquilino/pagar': typeof InquilinoPagarRoute
+  '/admin': typeof AdminIndexRoute
+  '/inquilino': typeof InquilinoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/inquilino': typeof InquilinoRouteWithChildren
+  '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/locales': typeof AdminLocalesRoute
+  '/admin/pagos': typeof AdminPagosRoute
+  '/inquilino/disponibles': typeof InquilinoDisponiblesRoute
+  '/inquilino/historial': typeof InquilinoHistorialRoute
+  '/inquilino/pagar': typeof InquilinoPagarRoute
+  '/admin/': typeof AdminIndexRoute
+  '/inquilino/': typeof InquilinoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/inquilino'
+    | '/admin/ajustes'
+    | '/admin/inquilinos'
+    | '/admin/locales'
+    | '/admin/pagos'
+    | '/inquilino/disponibles'
+    | '/inquilino/historial'
+    | '/inquilino/pagar'
+    | '/admin/'
+    | '/inquilino/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin/ajustes'
+    | '/admin/inquilinos'
+    | '/admin/locales'
+    | '/admin/pagos'
+    | '/inquilino/disponibles'
+    | '/inquilino/historial'
+    | '/inquilino/pagar'
+    | '/admin'
+    | '/inquilino'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/inquilino'
+    | '/admin/ajustes'
+    | '/admin/inquilinos'
+    | '/admin/locales'
+    | '/admin/pagos'
+    | '/inquilino/disponibles'
+    | '/inquilino/historial'
+    | '/inquilino/pagar'
+    | '/admin/'
+    | '/inquilino/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  InquilinoRoute: typeof InquilinoRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,126 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inquilino': {
+      id: '/inquilino'
+      path: '/inquilino'
+      fullPath: '/inquilino'
+      preLoaderRoute: typeof InquilinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ajustes': {
+      id: '/admin/ajustes'
+      path: '/ajustes'
+      fullPath: '/admin/ajustes'
+      preLoaderRoute: typeof AdminAjustesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inquilinos': {
+      id: '/admin/inquilinos'
+      path: '/inquilinos'
+      fullPath: '/admin/inquilinos'
+      preLoaderRoute: typeof AdminInquilinosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/locales': {
+      id: '/admin/locales'
+      path: '/locales'
+      fullPath: '/admin/locales'
+      preLoaderRoute: typeof AdminLocalesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pagos': {
+      id: '/admin/pagos'
+      path: '/pagos'
+      fullPath: '/admin/pagos'
+      preLoaderRoute: typeof AdminPagosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/inquilino/': {
+      id: '/inquilino/'
+      path: '/'
+      fullPath: '/inquilino/'
+      preLoaderRoute: typeof InquilinoIndexRouteImport
+      parentRoute: typeof InquilinoRoute
+    }
+    '/inquilino/disponibles': {
+      id: '/inquilino/disponibles'
+      path: '/disponibles'
+      fullPath: '/inquilino/disponibles'
+      preLoaderRoute: typeof InquilinoDisponiblesRouteImport
+      parentRoute: typeof InquilinoRoute
+    }
+    '/inquilino/historial': {
+      id: '/inquilino/historial'
+      path: '/historial'
+      fullPath: '/inquilino/historial'
+      preLoaderRoute: typeof InquilinoHistorialRouteImport
+      parentRoute: typeof InquilinoRoute
+    }
+    '/inquilino/pagar': {
+      id: '/inquilino/pagar'
+      path: '/pagar'
+      fullPath: '/inquilino/pagar'
+      preLoaderRoute: typeof InquilinoPagarRouteImport
+      parentRoute: typeof InquilinoRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminAjustesRoute: typeof AdminAjustesRoute
+  AdminInquilinosRoute: typeof AdminInquilinosRoute
+  AdminLocalesRoute: typeof AdminLocalesRoute
+  AdminPagosRoute: typeof AdminPagosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAjustesRoute: AdminAjustesRoute,
+  AdminInquilinosRoute: AdminInquilinosRoute,
+  AdminLocalesRoute: AdminLocalesRoute,
+  AdminPagosRoute: AdminPagosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface InquilinoRouteChildren {
+  InquilinoDisponiblesRoute: typeof InquilinoDisponiblesRoute
+  InquilinoHistorialRoute: typeof InquilinoHistorialRoute
+  InquilinoPagarRoute: typeof InquilinoPagarRoute
+  InquilinoIndexRoute: typeof InquilinoIndexRoute
+}
+
+const InquilinoRouteChildren: InquilinoRouteChildren = {
+  InquilinoDisponiblesRoute: InquilinoDisponiblesRoute,
+  InquilinoHistorialRoute: InquilinoHistorialRoute,
+  InquilinoPagarRoute: InquilinoPagarRoute,
+  InquilinoIndexRoute: InquilinoIndexRoute,
+}
+
+const InquilinoRouteWithChildren = InquilinoRoute._addFileChildren(
+  InquilinoRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  InquilinoRoute: InquilinoRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
