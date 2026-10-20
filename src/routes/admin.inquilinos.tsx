@@ -129,9 +129,9 @@ const tenantSchema = z.object({
   endDate: z.string().min(10, "Elige la fecha"),
 }).refine((v) => v.endDate > v.startDate, { path: ["endDate"], message: "Debe ser después del inicio" });
 
-type Errors = Partial<Record<string, string>>;
+type Errors = { [K in "name" | "document" | "phone" | "email" | "username" | "password" | "propertyId" | "monthlyRent" | "cutoffDay" | "startDate" | "endDate"]?: string };
 
-function Field({ id, label, error, hint, children }: { id: string; label: string; error?: string; hint?: string; children: React.ReactNode }) {
+function Field({ id, label, error, hint, children }: { id: string; label: string; error?: string | undefined; hint?: string | undefined; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>{label}</Label>
@@ -155,7 +155,7 @@ function NewTenantDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
     e.preventDefault();
     const parsed = tenantSchema.safeParse({ ...f, monthlyRent: Number(f.monthlyRent.replace(/\D/g, "")), cutoffDay: Number(f.cutoffDay) });
     if (!parsed.success) {
-      setErrors(Object.fromEntries(parsed.error.issues.map((i) => [i.path[0], i.message])));
+      setErrors(Object.fromEntries(parsed.error.issues.map((i) => [String(i.path[0]), i.message])) as Errors);
       return;
     }
     setErrors({});
@@ -240,7 +240,7 @@ function ManualPaymentDialog({ acc, onClose }: { acc: TenantAccount | null; onCl
     if (!acc) return;
     setSaving(true);
     try {
-      const p = await services.payments.registerManual({ tenantId: acc.tenant.id, period: selected, method, note: note || undefined });
+      const p = await services.payments.registerManual({ tenantId: acc.tenant.id, period: selected, method, ...(note ? { note } : {}) });
       toast.success("Pago registrado", { description: `${formatPeriod(p.period)} · ${formatCOP(p.total)}` });
       refresh();
       setPeriod("");

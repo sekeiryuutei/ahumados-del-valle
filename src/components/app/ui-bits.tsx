@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Inbox, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
+export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string | undefined; action?: ReactNode }) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
@@ -18,7 +18,7 @@ export function Panel({ children, className }: { children: ReactNode; className?
   return <section className={cn("rounded-2xl border bg-card p-5 shadow-soft", className)}>{children}</section>;
 }
 
-export function Stat({ label, value, hint, tone = "default" }: { label: string; value: string; hint?: string; tone?: "default" | "primary" | "warning" | "success" }) {
+export function Stat({ label, value, hint, tone = "default" }: { label: string; value: string; hint?: string | undefined; tone?: "default" | "primary" | "warning" | "success" }) {
   const tones = {
     default: "",
     primary: "text-primary",
@@ -42,7 +42,7 @@ export function Loading({ label = "Cargando…" }: { label?: string }) {
   );
 }
 
-export function Empty({ title, text, action }: { title: string; text?: string; action?: ReactNode }) {
+export function Empty({ title, text, action }: { title: string; text?: string | undefined; action?: ReactNode }) {
   return (
     <div className="flex flex-col items-center rounded-2xl border border-dashed bg-card/50 px-6 py-12 text-center">
       <Inbox className="size-8 text-muted-foreground" />
@@ -53,7 +53,7 @@ export function Empty({ title, text, action }: { title: string; text?: string; a
   );
 }
 
-export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () => void }) {
+export function ErrorBox({ message, onRetry }: { message: string; onRetry?: (() => void) | undefined }) {
   return (
     <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5 text-sm">
       <p className="font-semibold text-destructive">No pudimos cargar la información</p>

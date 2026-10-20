@@ -36,7 +36,8 @@ export function formatDateTime(iso: string): string {
 
 /** "2026-10" -> "Octubre 2026" */
 export function formatPeriod(period: string): string {
-  const [y, m] = period.split("-").map(Number);
+  const y = Number(period.slice(0, 4));
+  const m = Number(period.slice(5, 7));
   const label = new Intl.DateTimeFormat("es-CO", { month: "long", timeZone: "UTC" }).format(
     new Date(Date.UTC(y, m - 1, 15)),
   );

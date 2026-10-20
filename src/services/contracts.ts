@@ -79,7 +79,7 @@ export interface PaymentService {
     tenantId: string;
     period: string;
     method: "efectivo" | "transferencia";
-    note?: string;
+    note?: string | undefined;
   }): Promise<RentPayment>;
   /** Inicia un pago en línea (demostración). Queda "en_proceso". */
   startOnline(input: {

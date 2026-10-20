@@ -41,6 +41,6 @@ describe("arriendos", () => {
 
   it("periodo vencido después del día de corte", () => {
     const pending = pendingPeriods(lease, [paid("2026-08"), paid("2026-09")], "2026-10-20");
-    expect(pending[0].overdue).toBe(true);
+    expect(pending[0]?.overdue).toBe(true);
   });
 });

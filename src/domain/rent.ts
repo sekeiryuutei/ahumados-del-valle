@@ -3,8 +3,10 @@ import type { Lease, PendingPeriod, RentPayment } from "./types";
 /** Lista de periodos YYYY-MM desde start hasta end (inclusive). */
 export function periodsBetween(start: string, end: string): string[] {
   const out: string[] = [];
-  let [y, m] = start.slice(0, 7).split("-").map(Number);
-  const [ey, em] = end.slice(0, 7).split("-").map(Number);
+  let y = Number(start.slice(0, 4));
+  let m = Number(start.slice(5, 7));
+  const ey = Number(end.slice(0, 4));
+  const em = Number(end.slice(5, 7));
   while (y < ey || (y === ey && m <= em)) {
     out.push(`${y}-${String(m).padStart(2, "0")}`);
     m += 1;

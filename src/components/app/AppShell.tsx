@@ -22,7 +22,7 @@ export interface NavItem {
   to: LinkProps["to"];
   label: string;
   icon: LucideIcon;
-  exact?: boolean;
+  exact?: boolean | undefined;
 }
 
 const homeFor: Record<Role, string> = {
@@ -69,7 +69,7 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: item.exact }}
+              activeOptions={{ exact: !!item.exact }}
               className="flex h-12 items-center gap-3 rounded-xl px-3 font-medium transition-colors hover:bg-sidebar-accent data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground"
             >
               <item.icon className="size-5" /> {item.label}
@@ -109,7 +109,7 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
           <Link
             key={item.to}
             to={item.to}
-            activeOptions={{ exact: item.exact }}
+            activeOptions={{ exact: !!item.exact }}
             className="flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground data-[status=active]:text-primary"
           >
             <item.icon className="size-6" />
