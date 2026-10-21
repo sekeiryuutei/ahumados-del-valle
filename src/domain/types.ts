@@ -9,7 +9,7 @@ export interface User {
   username: string;
   role: Role;
   /** Solo para inquilinos: su id de inquilino */
-  tenantId?: string;
+  tenantId?: string | undefined;
 }
 
 export interface Session {
@@ -70,13 +70,13 @@ export interface RentPayment {
   surcharge: number;
   total: number;
   method: PaymentMethod;
-  channel?: OnlineChannel;
+  channel?: OnlineChannel | undefined;
   status: PaymentStatus;
   createdAt: string;
   registeredBy: string;
   /** true mientras el pago provenga de la simulación */
   demo: boolean;
-  note?: string;
+  note?: string | undefined;
 }
 
 export interface SurchargeSetting {

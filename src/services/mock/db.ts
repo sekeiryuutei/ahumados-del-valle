@@ -48,9 +48,9 @@ function seed(): MockDb {
     demo: true,
   });
   ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"].forEach((p, i) =>
-    payments.push(mk(leases[0], p, i % 3 === 2 ? "wompi" : "transferencia", i % 3 === 2 ? 5_000 : 0)),
+    payments.push(mk(leases[0]!, p, i % 3 === 2 ? "wompi" : "transferencia", i % 3 === 2 ? 5_000 : 0)),
   );
-  ["2026-03", "2026-04", "2026-05", "2026-06", "2026-07"].forEach((p) => payments.push(mk(leases[1], p, "efectivo")));
+  ["2026-03", "2026-04", "2026-05", "2026-06", "2026-07"].forEach((p) => payments.push(mk(leases[1]!, p, "efectivo")));
 
   return {
     properties,
