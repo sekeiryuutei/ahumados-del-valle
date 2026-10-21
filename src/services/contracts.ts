@@ -22,7 +22,7 @@ export class ServiceError extends Error {
   }
 }
 
-export type Portal = Extract<Role, "admin" | "inquilino">;
+export type Portal = Role | "ahumadero";
 
 export interface AuthService {
   login(portal: Portal, username: string, password: string): Promise<Session>;
