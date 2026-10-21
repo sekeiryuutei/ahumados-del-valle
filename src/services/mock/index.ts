@@ -38,7 +38,7 @@ function account(tenantId: string): TenantAccount {
 
 function currentSurcharge() {
   const h = db().surchargeHistory;
-  return h[h.length - 1];
+  return h[h.length - 1]!;
 }
 
 function actorName() {
@@ -162,7 +162,8 @@ export const mockServices: Services = {
       const d = db();
       const t = d.tenants.find((x) => x.id === id);
       if (!t) throw new ServiceError("no_encontrado", "No encontramos este inquilino.");
-      d.credentials[t.username].password = password;
+      const c = d.credentials[t.username];
+      if (c) c.password = password;
       save();
     },
   },

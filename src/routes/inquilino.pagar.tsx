@@ -77,7 +77,7 @@ function PayPage() {
     );
   }
 
-  const selected = a.pending.find((p) => p.period === period) ?? a.pending[0];
+  const selected = a.pending.find((p) => p.period === period) ?? a.pending[0]!;
   const totals = onlineTotal(selected.amount, surcharge.data!.amount);
 
   const pay = async (simulated: "pagado" | "fallido") => {

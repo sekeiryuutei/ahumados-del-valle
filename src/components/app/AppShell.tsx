@@ -19,7 +19,7 @@ import {
 import { Loading } from "./ui-bits";
 
 export interface NavItem {
-  to: LinkProps["to"];
+  to: NonNullable<LinkProps["to"]>;
   label: string;
   icon: LucideIcon;
   exact?: boolean | undefined;
