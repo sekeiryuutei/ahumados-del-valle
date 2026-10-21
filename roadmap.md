@@ -7,6 +7,7 @@
 - [x] Inquilino: contrato y saldo, pagar con Wompi (+ recargo $5.000), locales disponibles, historial
 
 ## Pendiente (del documento de especificación)
+- [ ] Separar acceso de inquilinos y ahumadero; portales por cargo: recepción, administración, contabilidad, empleados de ruta, galería y ahumado
 - [ ] Punto de venta, clientes y fiados
 - [ ] Rutas (offline), inventario, planta, recetas, compras
 - [ ] Nómina/asistencia, gastos por local, recordatorios
