@@ -12,4 +12,4 @@
 - [ ] Rutas (offline), inventario, planta, recetas, compras
 - [ ] Nómina/asistencia, gastos por local, recordatorios
 - [ ] Superadministrador e integraciones
-- [ ] Fase 2: backend real (Lovable Cloud) y Wompi real — requiere decisión del usuario
+- [ ] Fase 2: backend real y Wompi real — fuera del alcance del documento frontend actual
