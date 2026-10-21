@@ -1,7 +1,8 @@
 import { pendingPeriods } from "@/domain/rent";
+import { matchesPortal } from "@/domain/portals";
 import type { RentPayment, Session, TenantAccount } from "@/domain/types";
 import { currentPeriod, todayBogota } from "@/lib/format";
-import { ServiceError, type Services } from "../contracts";
+import { ServiceError, type RentalServices } from "../contracts";
 import { db, delay, save, uid } from "./db";
 
 const SESSION_KEY = "adv.session.v1";
@@ -38,20 +39,22 @@ function account(tenantId: string): TenantAccount {
 
 function currentSurcharge() {
   const h = db().surchargeHistory;
-  return h[h.length - 1]!;
+  const current = h[h.length - 1];
+  if (!current) throw new ServiceError("no_encontrado", "Configura el recargo de pagos.");
+  return current;
 }
 
 function actorName() {
   return readSession()?.user.name ?? "Sistema";
 }
 
-export const mockServices: Services = {
+export const mockServices: RentalServices = {
   auth: {
     async login(portal, username, password) {
       await delay(400);
       const key = username.trim().toLowerCase();
       const cred = db().credentials[key];
-      if (!cred || cred.password !== password || cred.role !== portal) {
+      if (!cred || cred.password !== password || !matchesPortal(cred.role, portal)) {
         throw new ServiceError("credenciales", "Usuario o clave incorrectos. Revisa e intenta de nuevo.");
       }
       if (cred.role === "inquilino") {

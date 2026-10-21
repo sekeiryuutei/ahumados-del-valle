@@ -12,6 +12,7 @@ import type {
   Tenant,
   TenantAccount,
 } from "@/domain/types";
+import type { BusinessServices } from "./operation-contracts";
 
 export class ServiceError extends Error {
   constructor(
@@ -22,7 +23,7 @@ export class ServiceError extends Error {
   }
 }
 
-export type Portal = Extract<Role, "admin" | "inquilino">;
+export type Portal = Role | "ahumadero";
 
 export interface AuthService {
   login(portal: Portal, username: string, password: string): Promise<Session>;
@@ -101,7 +102,7 @@ export interface DashboardService {
   rentalSummary(): Promise<RentalSummary>;
 }
 
-export interface Services {
+export interface RentalServices {
   auth: AuthService;
   properties: PropertyService;
   tenants: TenantService;
@@ -110,3 +111,5 @@ export interface Services {
   settings: SettingsService;
   dashboard: DashboardService;
 }
+
+export interface Services extends RentalServices, BusinessServices {}

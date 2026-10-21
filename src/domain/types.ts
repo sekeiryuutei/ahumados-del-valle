@@ -1,7 +1,7 @@
 // Tipos de dominio. Sin dependencias de React ni de la interfaz.
 // Dinero: enteros COP. Fechas: ISO (YYYY-MM-DD o ISO completo).
 
-export type Role = "superadmin" | "admin" | "vendedor" | "ruta" | "planta" | "inquilino";
+export type Role = "superadmin" | "admin" | "contador" | "recepcion" | "vendedor" | "ruta" | "planta" | "inquilino";
 
 export interface User {
   id: string;
