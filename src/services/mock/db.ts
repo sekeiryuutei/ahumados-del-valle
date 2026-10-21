@@ -1,11 +1,11 @@
 // Base de datos simulada persistida en localStorage. Solo para la fase de frontend.
-import type { Lease, Property, RentPayment, SurchargeSetting, Tenant } from "@/domain/types";
+import type { Lease, Property, RentPayment, Role, SurchargeSetting, Tenant } from "@/domain/types";
 
 export interface MockDb {
   properties: Property[];
   tenants: Tenant[];
   /** Contraseñas mock. El backend real las guardará con hash. */
-  credentials: Record<string, { password: string; role: "admin" | "inquilino"; refId: string; name: string }>;
+  credentials: Record<string, { password: string; role: Role; refId: string; name: string }>;
   leases: Lease[];
   payments: RentPayment[];
   surchargeHistory: SurchargeSetting[];
@@ -47,16 +47,24 @@ function seed(): MockDb {
     registeredBy: method === "wompi" ? "Inquilino" : "Administrador",
     demo: true,
   });
-  ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"].forEach((p, i) =>
-    payments.push(mk(leases[0]!, p, i % 3 === 2 ? "wompi" : "transferencia", i % 3 === 2 ? 5_000 : 0)),
+  const firstLease = leases[0];
+  const secondLease = leases[1];
+  if (firstLease) ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"].forEach((p, i) =>
+    payments.push(mk(firstLease, p, i % 3 === 2 ? "wompi" : "transferencia", i % 3 === 2 ? 5_000 : 0)),
   );
-  ["2026-03", "2026-04", "2026-05", "2026-06", "2026-07"].forEach((p) => payments.push(mk(leases[1]!, p, "efectivo")));
+  if (secondLease) ["2026-03", "2026-04", "2026-05", "2026-06", "2026-07"].forEach((p) => payments.push(mk(secondLease, p, "efectivo")));
 
   return {
     properties,
     tenants,
     credentials: {
       admin: { password: "admin123", role: "admin", refId: "u-admin", name: "Administrador" },
+      contador: { password: "contador123", role: "contador", refId: "u-contador", name: "Contador de demostración" },
+      recepcion: { password: "recepcion123", role: "recepcion", refId: "u-recepcion", name: "Recepción de demostración" },
+      galeria: { password: "galeria123", role: "vendedor", refId: "u-galeria", name: "Vendedor de galería" },
+      ruta: { password: "ruta123", role: "ruta", refId: "u-ruta", name: "Empleado de ruta" },
+      planta: { password: "planta123", role: "planta", refId: "u-planta", name: "Operario de ahumado" },
+      tecnico: { password: "tecnico123", role: "superadmin", refId: "u-tecnico", name: "Administrador técnico" },
       maria: { password: "maria123", role: "inquilino", refId: "t1", name: "María Fernanda López" },
       donjulio: { password: "julio123", role: "inquilino", refId: "t2", name: "Frutas Don Julio S.A.S." },
     },
@@ -76,6 +84,8 @@ export function db(): MockDb {
   try {
     const raw = window.localStorage.getItem(KEY);
     cache = raw ? (JSON.parse(raw) as MockDb) : seed();
+    const defaults = seed().credentials;
+    for (const [key, value] of Object.entries(defaults)) if (!cache.credentials[key]) cache.credentials[key] = value;
   } catch {
     cache = seed();
   }

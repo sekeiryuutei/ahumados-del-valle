@@ -1,4 +1,5 @@
 import { pendingPeriods } from "@/domain/rent";
+import { matchesPortal } from "@/domain/portals";
 import type { RentPayment, Session, TenantAccount } from "@/domain/types";
 import { currentPeriod, todayBogota } from "@/lib/format";
 import { ServiceError, type Services } from "../contracts";
@@ -38,7 +39,9 @@ function account(tenantId: string): TenantAccount {
 
 function currentSurcharge() {
   const h = db().surchargeHistory;
-  return h[h.length - 1]!;
+  const current = h[h.length - 1];
+  if (!current) throw new ServiceError("no_encontrado", "Configura el recargo de pagos.");
+  return current;
 }
 
 function actorName() {
@@ -51,7 +54,7 @@ export const mockServices: Services = {
       await delay(400);
       const key = username.trim().toLowerCase();
       const cred = db().credentials[key];
-      if (!cred || cred.password !== password || cred.role !== portal) {
+      if (!cred || cred.password !== password || !matchesPortal(cred.role, portal)) {
         throw new ServiceError("credenciales", "Usuario o clave incorrectos. Revisa e intenta de nuevo.");
       }
       if (cred.role === "inquilino") {
