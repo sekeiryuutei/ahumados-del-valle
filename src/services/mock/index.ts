@@ -2,7 +2,7 @@ import { pendingPeriods } from "@/domain/rent";
 import { matchesPortal } from "@/domain/portals";
 import type { RentPayment, Session, TenantAccount } from "@/domain/types";
 import { currentPeriod, todayBogota } from "@/lib/format";
-import { ServiceError, type Services } from "../contracts";
+import { ServiceError, type RentalServices } from "../contracts";
 import { db, delay, save, uid } from "./db";
 
 const SESSION_KEY = "adv.session.v1";
@@ -48,7 +48,7 @@ function actorName() {
   return readSession()?.user.name ?? "Sistema";
 }
 
-export const mockServices: Services = {
+export const mockServices: RentalServices = {
   auth: {
     async login(portal, username, password) {
       await delay(400);

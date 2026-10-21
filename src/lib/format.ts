@@ -52,3 +52,7 @@ export function todayBogota(now: Date = new Date()): string {
 export function currentPeriod(now: Date = new Date()): string {
   return todayBogota(now).slice(0, 7);
 }
+
+export function formatKg(grams: number): string {
+  return `${new Intl.NumberFormat("es-CO", { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(grams / 1000)} kg`;
+}
