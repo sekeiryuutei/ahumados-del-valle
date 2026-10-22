@@ -2,6 +2,7 @@ import { queryOptions, useQueryClient } from "@tanstack/react-query";
 import { services } from "@/services";
 
 export const q = {
+  business: () => queryOptions({ queryKey: ["business"], queryFn: () => services.business.snapshot() }),
   summary: () => queryOptions({ queryKey: ["summary"], queryFn: () => services.dashboard.rentalSummary() }),
   tenants: () => queryOptions({ queryKey: ["tenants"], queryFn: () => services.tenants.list() }),
   account: (id: string) => queryOptions({ queryKey: ["account", id], queryFn: () => services.tenants.getAccount(id) }),
