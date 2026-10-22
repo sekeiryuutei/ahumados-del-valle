@@ -1,5 +1,5 @@
 import { Link, Navigate, Outlet, useNavigate, type LinkProps } from "@tanstack/react-router";
-import { LogOut, ShieldAlert, type LucideIcon } from "lucide-react";
+import { LogOut, ShieldAlert, Menu, Moon, Sun, Wifi, WifiOff, type LucideIcon } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { Role } from "@/domain/types";
@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Loading } from "./ui-bits";
+import { roleHomes } from "@/domain/portals";
 
 export interface NavItem {
   to: NonNullable<LinkProps["to"]>;
@@ -25,26 +26,26 @@ export interface NavItem {
   exact?: boolean | undefined;
 }
 
-const homeFor: Record<Role, string> = {
-  admin: "/admin",
-  inquilino: "/inquilino",
-  superadmin: "/",
-  vendedor: "/",
-  ruta: "/",
-  planta: "/",
-};
-
 export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]; portalName: string }) {
   const session = useSession();
   const [mounted, setMounted] = useState(false);
   const [confirmOut, setConfirmOut] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dark, setDark] = useState(false);
+  const [online, setOnline] = useState(true);
   const navigate = useNavigate();
   const qc = useQueryClient();
   useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+    const update = () => setOnline(navigator.onLine);
+    update(); window.addEventListener("online", update); window.addEventListener("offline", update);
+    return () => { window.removeEventListener("online", update); window.removeEventListener("offline", update); };
+  }, []);
 
   if (!mounted) return <Loading />;
   if (!session) return <Navigate to="/" replace />;
-  if (session.user.role !== role) return <Restricted home={homeFor[session.user.role]} />;
+  if (session.user.role !== role) return <Restricted home={roleHomes[session.user.role]} />;
 
   const signOut = async () => {
     await qc.cancelQueries();
@@ -64,7 +65,7 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
             <p className="text-xs opacity-70">{portalName}</p>
           </div>
         </div>
-        <nav className="flex flex-1 flex-col gap-1">
+        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto">
           {nav.map((item) => (
             <Link
               key={item.to}
@@ -79,9 +80,9 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
         <div className="rounded-xl bg-sidebar-accent p-3">
           <p className="truncate text-sm font-semibold text-sidebar-accent-foreground">{session.user.name}</p>
           <p className="text-xs opacity-70">@{session.user.username}</p>
-          <button onClick={() => setConfirmOut(true)} className="mt-3 flex items-center gap-2 text-sm font-medium opacity-80 hover:opacity-100">
+          <Button variant="ghost" onClick={() => setConfirmOut(true)} className="mt-3 flex items-center gap-2 text-sm font-medium opacity-80 hover:opacity-100">
             <LogOut className="size-4" /> Cerrar sesión
-          </button>
+          </Button>
         </div>
       </aside>
 
@@ -94,28 +95,34 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
             <p className="text-xs text-muted-foreground">{session.user.name}</p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" aria-label="Cerrar sesión" onClick={() => setConfirmOut(true)}>
-          <LogOut className="size-5" />
+        <Button variant="ghost" size="icon" aria-label="Abrir menú" onClick={() => setMenuOpen((v) => !v)}>
+          <Menu className="size-5" />
         </Button>
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-5 md:px-8 md:pb-10 md:pt-8">
+        <div className="mb-6 flex items-center justify-between gap-2 border-b pb-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-2">{online ? <Wifi className="size-4 text-success" /> : <WifiOff className="size-4 text-warning" />}{online ? "Datos locales · Demostración" : "Sin conexión · Datos locales"}</span>
+          <Button variant="ghost" size="icon" aria-label={dark ? "Modo claro" : "Modo oscuro"} title={dark ? "Modo claro" : "Modo oscuro"} onClick={() => { const next = !dark; setDark(next); document.documentElement.classList.toggle("dark", next); }}>{dark ? <Sun /> : <Moon />}</Button>
+        </div>
         <Outlet />
       </main>
 
       {/* Móvil: navegación inferior con pocas opciones */}
-      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-20 grid border-t bg-card md:hidden" style={{ gridTemplateColumns: `repeat(${nav.length}, 1fr)` }}>
-        {nav.map((item) => (
+      {menuOpen && <nav aria-label="Menú completo" className="fixed inset-x-0 bottom-20 top-16 z-30 overflow-y-auto border-b bg-background p-4 md:hidden">{nav.map(item => <Button asChild key={item.to} variant="ghost" className="mb-1 h-14 w-full justify-start"><Link to={item.to} onClick={() => setMenuOpen(false)}><item.icon />{item.label}</Link></Button>)}<Button variant="outline" className="mt-4 h-14 w-full" onClick={() => setConfirmOut(true)}><LogOut />Cerrar sesión</Button></nav>}
+      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-20 flex border-t bg-card md:hidden">
+        {nav.slice(0, 4).map((item) => (
           <Link
             key={item.to}
             to={item.to}
             activeOptions={{ exact: !!item.exact }}
-            className="flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground data-[status=active]:text-primary"
+            className="flex h-16 min-w-0 flex-1 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground data-[status=active]:text-primary"
           >
             <item.icon className="size-6" />
             {item.label}
           </Link>
         ))}
+        {nav.length > 4 && <Button variant="ghost" className="h-16 flex-1 flex-col gap-1 text-xs" onClick={() => setMenuOpen(v => !v)}><Menu className="size-6" />Más</Button>}
       </nav>
 
       <AlertDialog open={confirmOut} onOpenChange={setConfirmOut}>
@@ -134,7 +141,7 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
   );
 }
 
-function Restricted({ home }: { home: string }) {
+function Restricted({ home }: { home: (typeof roleHomes)[Role] }) {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-sm text-center">
@@ -142,7 +149,7 @@ function Restricted({ home }: { home: string }) {
         <h1 className="mt-4 text-2xl font-bold">Acceso restringido</h1>
         <p className="mt-2 text-muted-foreground">Esta sección no está disponible para tu usuario.</p>
         <Button asChild size="xl" className="mt-6 w-full">
-          <a href={home}>Volver a mi panel</a>
+          <Link to={home}>Volver a mi panel</Link>
         </Button>
       </div>
     </div>
