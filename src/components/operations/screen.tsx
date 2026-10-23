@@ -2,11 +2,11 @@ import { Component, Suspense, type ReactNode } from "react";
 import { Loading, ErrorBox } from "@/components/app/ui-bits";
 import { errorMessage } from "@/services";
 class OperationsBoundary extends Component<{ children: ReactNode }, { error: unknown }> {
-  state: { error: unknown } = { error: null };
+  override state: { error: unknown } = { error: null };
   static getDerivedStateFromError(error: unknown) {
     return { error };
   }
-  render() {
+  override render() {
     return this.state.error ? (
       <ErrorBox
         message={errorMessage(this.state.error)}

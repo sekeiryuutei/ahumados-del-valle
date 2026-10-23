@@ -71,7 +71,7 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
               key={item.to}
               to={item.to}
               activeOptions={{ exact: !!item.exact }}
-              className="flex h-12 items-center gap-3 rounded-xl px-3 font-medium transition-colors hover:bg-sidebar-accent data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground"
+              className="flex h-12 shrink-0 items-center gap-3 rounded-xl px-3 font-medium transition-colors hover:bg-sidebar-accent data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground"
             >
               <item.icon className="size-5" /> {item.label}
             </Link>
@@ -100,7 +100,7 @@ export function AppShell({ role, nav, portalName }: { role: Role; nav: NavItem[]
         </Button>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-5 md:px-8 md:pb-10 md:pt-8">
+      <main className="mx-auto min-w-0 w-full max-w-6xl flex-1 px-4 pb-28 pt-5 md:px-8 md:pb-10 md:pt-8">
         <div className="mb-6 flex items-center justify-between gap-2 border-b pb-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-2">{online ? <Wifi className="size-4 text-success" /> : <WifiOff className="size-4 text-warning" />}{online ? "Datos locales · Demostración" : "Sin conexión · Datos locales"}</span>
           <Button variant="ghost" size="icon" aria-label={dark ? "Modo claro" : "Modo oscuro"} title={dark ? "Modo claro" : "Modo oscuro"} onClick={() => { const next = !dark; setDark(next); document.documentElement.classList.toggle("dark", next); }}>{dark ? <Sun /> : <Moon />}</Button>

@@ -54,7 +54,7 @@ export const mockServices: RentalServices = {
       await delay(400);
       const key = username.trim().toLowerCase();
       const cred = db().credentials[key];
-      if (!cred || cred.password !== password || !matchesPortal(cred.role, portal)) {
+      if (!cred || cred.active === false || cred.password !== password || !matchesPortal(cred.role, portal)) {
         throw new ServiceError("credenciales", "Usuario o clave incorrectos. Revisa e intenta de nuevo.");
       }
       if (cred.role === "inquilino") {

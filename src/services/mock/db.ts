@@ -5,7 +5,7 @@ export interface MockDb {
   properties: Property[];
   tenants: Tenant[];
   /** Contraseñas mock. El backend real las guardará con hash. */
-  credentials: Record<string, { password: string; role: Role; refId: string; name: string }>;
+  credentials: Record<string, { password: string; role: Role; refId: string; name: string; active?: boolean }>;
   leases: Lease[];
   payments: RentPayment[];
   surchargeHistory: SurchargeSetting[];
