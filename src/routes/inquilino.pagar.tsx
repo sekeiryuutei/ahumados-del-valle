@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -14,7 +15,7 @@ import { Empty, ErrorBox, Loading, PageHeader, Panel } from "@/components/app/ui
 import { DemoBadge } from "@/components/app/status";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/inquilino/pagar")({ component: PayPage });
+export const Route = createFileRoute("/inquilino/pagar")({ head: () => pageHead("Pagar mi arriendo"), component: PayPage });
 
 const channels: { id: OnlineChannel; label: string; icon: typeof Landmark }[] = [
   { id: "pse", label: "PSE", icon: Landmark },
@@ -38,7 +39,8 @@ function PayPage() {
 
   if (acc.isLoading || surcharge.isLoading) return <Loading />;
   if (acc.error || surcharge.error) return <ErrorBox message={errorMessage(acc.error ?? surcharge.error)} />;
-  const a = acc.data!;
+  const a = acc.data;
+  if (!a) return <Loading />;
 
   if (step === "resultado" && result) {
     const ok = result.status === "pagado";
@@ -77,8 +79,9 @@ function PayPage() {
     );
   }
 
-  const selected = a.pending.find((p) => p.period === period) ?? a.pending[0]!;
-  const totals = onlineTotal(selected.amount, surcharge.data!.amount);
+  const selected = a.pending.find((p) => p.period === period) ?? a.pending[0];
+  if (!selected || !surcharge.data) return <Loading />;
+  const totals = onlineTotal(selected.amount, surcharge.data.amount);
 
   const pay = async (simulated: "pagado" | "fallido") => {
     if (!channel) return;
@@ -97,7 +100,7 @@ function PayPage() {
 
   return (
     <>
-      <PageHeader title="Pagar arriendo" subtitle="Paga en línea de forma segura con Wompi." />
+      <PageHeader title="Pagar arriendo" subtitle="Wompi · Pago de demostración, sin cobro real." />
       <div className="mx-auto max-w-xl space-y-5">
         <section>
           <h2 className="mb-2 font-semibold">1. ¿Qué mes vas a pagar?</h2>

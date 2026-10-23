@@ -5,7 +5,7 @@ export interface MockDb {
   properties: Property[];
   tenants: Tenant[];
   /** Contraseñas mock. El backend real las guardará con hash. */
-  credentials: Record<string, { password: string; role: Role; refId: string; name: string }>;
+  credentials: Record<string, { password: string; role: Role; refId: string; name: string; active?: boolean }>;
   leases: Lease[];
   payments: RentPayment[];
   surchargeHistory: SurchargeSetting[];
@@ -85,7 +85,10 @@ export function db(): MockDb {
     const raw = window.localStorage.getItem(KEY);
     cache = raw ? (JSON.parse(raw) as MockDb) : seed();
     const defaults = seed().credentials;
-    for (const [key, value] of Object.entries(defaults)) if (!cache.credentials[key]) cache.credentials[key] = value;
+    for (const [key, value] of Object.entries(defaults)) {
+      if (!cache.credentials[key]) cache.credentials[key] = value;
+      else if (cache.credentials[key].active === undefined) cache.credentials[key].active = true;
+    }
   } catch {
     cache = seed();
   }

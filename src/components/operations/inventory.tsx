@@ -1,30 +1,547 @@
-import { useState } from 'react';
-import { Plus, ArrowRight, Eye, FlaskConical } from 'lucide-react';
-import { services } from '@/services';
-import { useSession } from '@/hooks/use-session';
-import { formatKg, formatCOP, todayBogota } from '@/lib/format';
-import { netWeight, shrinkage } from '@/domain/operation-rules';
-import type { LocationId, ProductionStage, Lot } from '@/domain/operations';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { PageHeader, Empty } from '@/components/app/ui-bits';
-import { useBusiness, useAction, NumberField, SelectField, Field, FormModal, Submit, Status, Table, cell } from './common';
+import { useState } from "react";
+import { Plus, ArrowRight, Eye, FlaskConical } from "lucide-react";
+import { services } from "@/services";
+import { useSession } from "@/hooks/use-session";
+import { formatKg, formatCOP, todayBogota } from "@/lib/format";
+import { netWeight, shrinkage } from "@/domain/operation-rules";
+import type { LocationId, ProductionStage, Lot } from "@/domain/operations";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PageHeader, Empty } from "@/components/app/ui-bits";
+import {
+  useBusiness,
+  useAction,
+  NumberField,
+  SelectField,
+  Field,
+  FormModal,
+  Submit,
+  Status,
+  Table,
+  cell,
+} from "./common";
 
 export function ReceivingPage() {
- const d=useBusiness();const {run,busy}=useAction();const [product,setProduct]=useState('prod-20');const [supplier,setSupplier]=useState('sup1');const [gross,setGross]=useState(14000);const [boxes,setBoxes]=useState(2);const [tare,setTare]=useState(Number(d.settings.find(s=>s.id==='tare')?.value||2000));const [units,setUnits]=useState(0);const [cost,setCost]=useState(0);const [expiry,setExpiry]=useState(todayBogota());const [destination,setDestination]=useState('proceso');const [order,setOrder]=useState('');
- const p=d.products.find(p=>p.id===product);const net=netWeight(gross,tare,boxes);
- return <><PageHeader title="Recibir cajas y mercancía"/><form className="grid max-w-4xl gap-5 md:grid-cols-2" onSubmit={async e=>{e.preventDefault();await run(()=>services.inventory.receive({productId:product,supplierId:supplier,grossGrams:gross,tareGrams:tare,boxes,units,cost,expiresAt:expiry,destination:destination as 'proceso'|'congelado',purchaseId:order||undefined}),'Recepción registrada y lote creado');}}><SelectField label="Proveedor" value={supplier} onChange={setSupplier} options={d.suppliers}/><SelectField label="Producto" value={product} onChange={setProduct} options={d.products.filter(p=>p.active)}/><NumberField label="Peso bruto · g" value={gross} onChange={setGross}/><NumberField label="Número de cajas" value={boxes} onChange={setBoxes}/><NumberField label="Tara por caja · g" value={tare} onChange={setTare}/><NumberField label="Unidades (si aplica)" value={units} onChange={setUnits}/><div className="border-y py-4"><p className="text-sm text-muted-foreground">Peso neto</p><p className="text-3xl font-bold">{formatKg(net)}</p></div><NumberField label="Costo total · COP" value={cost} onChange={setCost}/><Field label="Vencimiento"><Input type="date" required value={expiry} min={todayBogota()} onChange={e=>setExpiry(e.target.value)} className="h-12"/></Field><SelectField label="Destino" value={destination} onChange={setDestination} options={[{id:'proceso',name:'Crudo → proceso'},{id:'congelado',name:'Procesado / reventa → congelado'}]}/><SelectField label="Orden de compra (opcional)" value={order} onChange={setOrder} options={d.purchases.filter(o=>o.productId===product&&o.supplierId===supplier&&o.status!=='recibida').map(o=>({id:o.id,name:`${o.id} · Pendiente ${o.quantity-o.received} ${p?.control==='unidad'?'und':'g'}`}))}/><div className="md:col-span-2"><Submit busy={busy}>Confirmar recepción</Submit></div></form><h2 className="mb-4 mt-8 text-xl font-bold">Últimos lotes</h2><Table heads={['Lote','Producto','Neto','Destino','Vencimiento']}>{d.lots.slice(0,8).map(l=><tr key={l.id}><td className={cell}>{l.id}</td><td className={cell}>{d.products.find(p=>p.id===l.productId)?.name}</td><td className={cell}>{formatKg(l.grams)}</td><td className={cell}><Status>{l.stage}</Status></td><td className={cell}>{l.expiresAt}</td></tr>)}</Table></>;
+  const d = useBusiness();
+  const { run, busy } = useAction();
+  const [product, setProduct] = useState("prod-20");
+  const [supplier, setSupplier] = useState("sup1");
+  const [gross, setGross] = useState(14000);
+  const [boxes, setBoxes] = useState(2);
+  const [tare, setTare] = useState(Number(d.settings.find((s) => s.id === "tare")?.value || 2000));
+  const [units, setUnits] = useState(0);
+  const [cost, setCost] = useState(0);
+  const [expiry, setExpiry] = useState(todayBogota());
+  const [destination, setDestination] = useState("proceso");
+  const [order, setOrder] = useState("");
+  const p = d.products.find((p) => p.id === product);
+  const net = netWeight(gross, tare, boxes);
+  return (
+    <>
+      <PageHeader title="Recibir cajas y mercancía" />
+      <form
+        className="grid max-w-4xl gap-5 md:grid-cols-2"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await run(
+            () =>
+              services.inventory.receive({
+                productId: product,
+                supplierId: supplier,
+                grossGrams: gross,
+                tareGrams: tare,
+                boxes,
+                units,
+                cost,
+                expiresAt: expiry,
+                destination: destination as "proceso" | "congelado",
+                purchaseId: order || undefined,
+              }),
+            "Recepción registrada y lote creado",
+          );
+        }}
+      >
+        <SelectField
+          label="Proveedor"
+          value={supplier}
+          onChange={setSupplier}
+          options={d.suppliers}
+        />
+        <SelectField
+          label="Producto"
+          value={product}
+          onChange={setProduct}
+          options={d.products.filter((p) => p.active)}
+        />
+        <NumberField label="Peso bruto · g" value={gross} onChange={setGross} />
+        <NumberField label="Número de cajas" value={boxes} onChange={setBoxes} />
+        <NumberField label="Tara por caja · g" value={tare} onChange={setTare} />
+        <NumberField label="Unidades (si aplica)" value={units} onChange={setUnits} />
+        <div className="border-y py-4">
+          <p className="text-sm text-muted-foreground">Peso neto</p>
+          <p className="text-3xl font-bold">{formatKg(net)}</p>
+        </div>
+        <NumberField label="Costo total · COP" value={cost} onChange={setCost} />
+        <Field label="Vencimiento">
+          <Input
+            type="date"
+            required
+            value={expiry}
+            min={todayBogota()}
+            onChange={(e) => setExpiry(e.target.value)}
+            className="h-12"
+          />
+        </Field>
+        <SelectField
+          label="Destino"
+          value={destination}
+          onChange={setDestination}
+          options={[
+            { id: "proceso", name: "Crudo → proceso" },
+            { id: "congelado", name: "Procesado / reventa → congelado" },
+          ]}
+        />
+        <SelectField
+          label="Orden de compra (opcional)"
+          value={order}
+          onChange={setOrder}
+          options={d.purchases
+            .filter(
+              (o) =>
+                o.productId === product && o.supplierId === supplier && o.status !== "recibida",
+            )
+            .map((o) => ({
+              id: o.id,
+              name: `${o.id} · Pendiente ${o.quantity - o.received} ${p?.control === "unidad" ? "und" : "g"}`,
+            }))}
+        />
+        <div className="md:col-span-2">
+          <Submit busy={busy}>Confirmar recepción</Submit>
+        </div>
+      </form>
+      <h2 className="mb-4 mt-8 text-xl font-bold">Últimos lotes</h2>
+      <Table heads={["Lote", "Producto", "Neto", "Destino", "Vencimiento"]}>
+        {d.lots.slice(0, 8).map((l) => (
+          <tr key={l.id}>
+            <td className={cell}>{l.id}</td>
+            <td className={cell}>{d.products.find((p) => p.id === l.productId)?.name}</td>
+            <td className={cell}>{formatKg(l.grams)}</td>
+            <td className={cell}>
+              <Status>{l.stage}</Status>
+            </td>
+            <td className={cell}>{l.expiresAt}</td>
+          </tr>
+        ))}
+      </Table>
+    </>
+  );
 }
 export function InventoryPage() {
- const d=useBusiness();const session=useSession();const {run,busy}=useAction();const [location,setLocation]=useState('');const [search,setSearch]=useState('');const [action,setAction]=useState('');const [product,setProduct]=useState('prod-19');const [from,setFrom]=useState('ahumadero');const [to,setTo]=useState('galeria');const [qty,setQty]=useState(1000);const [reason,setReason]=useState('');
- return <><PageHeader title="Inventario y movimientos" action={session?.user.role==='admin'||session?.user.role==='recepcion'?<div className="flex gap-2"><Button onClick={()=>setAction('traslado')}><ArrowRight/>Trasladar</Button>{session.user.role==='admin'&&<Button variant="outline" onClick={()=>setAction('ajuste')}>Ajuste físico</Button>}</div>:undefined}/><div className="mb-5 grid gap-3 sm:grid-cols-2"><Input placeholder="Buscar producto" aria-label="Buscar inventario" className="h-12" value={search} onChange={e=>setSearch(e.target.value)}/><SelectField label="Ubicación" value={location} onChange={setLocation} options={d.locations}/></div><Table heads={['Producto','Ubicación','Disponible','Alerta']}>{d.balances.filter(b=>(!location||b.locationId===location)&&d.products.find(p=>p.id===b.productId)?.name.toLowerCase().includes(search.toLowerCase())).map(b=>{const p=d.products.find(p=>p.id===b.productId);return <tr key={`${b.productId}-${b.locationId}`}><td className={cell}>{p?.name}</td><td className={cell}>{d.locations.find(l=>l.id===b.locationId)?.name}</td><td className={cell}>{p?.control==='unidad'?`${b.quantity} und`:formatKg(b.quantity)}</td><td className={cell}><Status warning={b.quantity<(p?.minimum??0)}>{b.quantity<(p?.minimum??0)?'Bajo mínimo':'Correcto'}</Status></td></tr>;})}</Table><h2 className="mb-3 mt-8 text-xl font-bold">Trazabilidad</h2><Table heads={['Movimiento','Producto','Cantidad','Origen → destino','Responsable / motivo']}>{d.movements.filter(m=>!location||m.from===location||m.to===location).slice(0,40).map(m=><tr key={m.id}><td className={cell}>{m.type}<p className="text-xs text-muted-foreground">{m.reference}</p></td><td className={cell}>{d.products.find(p=>p.id===m.productId)?.name}</td><td className={cell}>{m.quantity} g/und</td><td className={cell}>{m.from??'Entrada'} → {m.to??'Salida'}</td><td className={cell}>{m.actor}<p className="text-xs text-muted-foreground">{m.reason}</p></td></tr>)}</Table><FormModal title={action==='traslado'?'Trasladar inventario':'Ajuste físico con motivo'} open={!!action} onClose={()=>setAction('')}><form className="space-y-4" onSubmit={async e=>{e.preventDefault();const ok=await run(async()=>{if(action==='traslado')await services.inventory.transfer(product,qty,from as LocationId,to as LocationId,reason);else await services.inventory.adjust(product,from as LocationId,qty,reason);return true;});if(ok)setAction('');}}><SelectField label="Producto" value={product} onChange={setProduct} options={d.products}/><SelectField label="Origen / ubicación" value={from} onChange={setFrom} options={d.locations}/>{action==='traslado'&&<SelectField label="Destino" value={to} onChange={setTo} options={d.locations}/>}<NumberField label={action==='traslado'?'Cantidad · g/und':'Diferencia física (+/−) · g/und'} value={qty} onChange={setQty}/><Field label="Motivo"><Input required value={reason} onChange={e=>setReason(e.target.value)}/></Field><Submit busy={busy}/></form></FormModal></>;
+  const d = useBusiness();
+  const session = useSession();
+  const { run, busy } = useAction();
+  const [location, setLocation] = useState("");
+  const [search, setSearch] = useState("");
+  const [action, setAction] = useState("");
+  const [product, setProduct] = useState("prod-19");
+  const [from, setFrom] = useState("ahumadero");
+  const [to, setTo] = useState("galeria");
+  const [qty, setQty] = useState(1000);
+  const [reason, setReason] = useState("");
+  const [lotFilter, setLotFilter] = useState("");
+  const [supplierFilter, setSupplierFilter] = useState("");
+  const [stageFilter, setStageFilter] = useState("");
+  const [expiryFilter, setExpiryFilter] = useState("");
+  const today = todayBogota();
+  const alertDate = new Date(`${today}T12:00:00-05:00`);
+  alertDate.setUTCDate(alertDate.getUTCDate() + Number(d.settings.find(s => s.id === "stock-alert")?.value || 7));
+  const soon = alertDate.toISOString().slice(0, 10);
+  return (
+    <>
+      <PageHeader
+        title="Inventario y movimientos"
+        action={
+          session?.user.role === "admin" || session?.user.role === "recepcion" ? (
+            <div className="flex gap-2">
+              <Button onClick={() => setAction("traslado")}>
+                <ArrowRight />
+                Trasladar
+              </Button>
+              {session.user.role === "admin" && (
+                <Button variant="outline" onClick={() => setAction("ajuste")}>
+                  Ajuste físico
+                </Button>
+              )}
+            </div>
+          ) : undefined
+        }
+      />
+      <div className="mb-5 grid gap-3 sm:grid-cols-2">
+        <Input
+          placeholder="Buscar producto"
+          aria-label="Buscar inventario"
+          className="h-12"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <SelectField
+          label="Ubicación"
+          value={location}
+          onChange={setLocation}
+          options={d.locations}
+        />
+      </div>
+      <Table heads={["Producto", "Ubicación", "Disponible", "Alerta"]}>
+        {d.balances
+          .filter(
+            (b) =>
+              (!location || b.locationId === location) &&
+              d.products
+                .find((p) => p.id === b.productId)
+                ?.name.toLowerCase()
+                .includes(search.toLowerCase()),
+          )
+          .map((b) => {
+            const p = d.products.find((p) => p.id === b.productId);
+            return (
+              <tr key={`${b.productId}-${b.locationId}`}>
+                <td className={cell}>{p?.name}</td>
+                <td className={cell}>{d.locations.find((l) => l.id === b.locationId)?.name}</td>
+                <td className={cell}>
+                  {p?.control === "unidad" ? `${b.quantity} und` : formatKg(b.quantity)}
+                </td>
+                <td className={cell}>
+                  <Status warning={b.quantity < (p?.minimum ?? 0)}>
+                    {b.quantity < (p?.minimum ?? 0) ? "Bajo mínimo" : "Correcto"}
+                  </Status>
+                </td>
+              </tr>
+            );
+          })}
+      </Table>
+      <h2 className="mb-3 mt-8 text-xl font-bold">Lotes y vencimientos</h2>
+      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Input aria-label="Buscar lote" placeholder="Código de lote" value={lotFilter} onChange={e => setLotFilter(e.target.value)} />
+        <SelectField label="Proveedor de lote" value={supplierFilter} onChange={setSupplierFilter} options={d.suppliers} />
+        <SelectField label="Estado de lote" value={stageFilter} onChange={setStageFilter} options={["crudo", "marinado", "ahumado", "congelado"].map(s => ({ id: s, name: s }))} />
+        <SelectField label="Vencimiento de lote" value={expiryFilter} onChange={setExpiryFilter} options={[{ id: "vencido", name: "Vencidos" }, { id: "proximo", name: "Próximos a vencer" }, { id: "vigente", name: "Vigentes" }]} />
+      </div>
+      <Table heads={["Lote", "Producto / proveedor", "Estado", "Neto", "Vencimiento"]}>
+        {d.lots.filter(l => (!location || l.locationId === location) && l.id.includes(lotFilter) && (!supplierFilter || l.supplierId === supplierFilter) && (!stageFilter || l.stage === stageFilter) && (d.products.find(p => p.id === l.productId)?.name.toLowerCase().includes(search.toLowerCase())) && (!expiryFilter || (expiryFilter === "vencido" ? l.expiresAt < today : expiryFilter === "proximo" ? l.expiresAt >= today && l.expiresAt <= soon : l.expiresAt > soon))).map(l => <tr key={l.id}><td className={cell}>{l.id}</td><td className={cell}>{d.products.find(p => p.id === l.productId)?.name}<p className="text-xs">{d.suppliers.find(s => s.id === l.supplierId)?.name}</p></td><td className={cell}>{l.stage}</td><td className={cell}>{l.units ? `${l.units} und` : formatKg(l.grams)}</td><td className={cell}><Status warning={l.expiresAt <= soon}>{l.expiresAt < today ? "Vencido" : l.expiresAt <= soon ? "Próximo a vencer" : "Vigente"}</Status><p className="text-xs">{l.expiresAt}</p></td></tr>)}
+      </Table>
+      <h2 className="mb-3 mt-8 text-xl font-bold">Trazabilidad</h2>
+      <Table
+        heads={["Movimiento", "Producto", "Cantidad", "Origen → destino", "Responsable / motivo"]}
+      >
+        {d.movements
+          .filter((m) => !location || m.from === location || m.to === location)
+          .slice(0, 40)
+          .map((m) => (
+            <tr key={m.id}>
+              <td className={cell}>
+                {m.type}
+                <p className="text-xs text-muted-foreground">{m.reference}</p>
+              </td>
+              <td className={cell}>{d.products.find((p) => p.id === m.productId)?.name}</td>
+              <td className={cell}>{d.products.find(p => p.id === m.productId)?.control === "unidad" ? `${m.quantity} und` : formatKg(m.quantity)}</td>
+              <td className={cell}>
+                {m.from ?? "Entrada"} → {m.to ?? "Salida"}
+              </td>
+              <td className={cell}>
+                {m.actor}
+                <p className="text-xs text-muted-foreground">{m.reason}</p>
+              </td>
+            </tr>
+          ))}
+      </Table>
+      <FormModal
+        title={action === "traslado" ? "Trasladar inventario" : "Ajuste físico con motivo"}
+        open={!!action}
+        onClose={() => setAction("")}
+      >
+        <form
+          className="space-y-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const ok = await run(async () => {
+              if (action === "traslado")
+                await services.inventory.transfer(
+                  product,
+                  qty,
+                  from as LocationId,
+                  to as LocationId,
+                  reason,
+                );
+              else await services.inventory.adjust(product, from as LocationId, qty, reason);
+              return true;
+            });
+            if (ok) setAction("");
+          }}
+        >
+          <SelectField
+            label="Producto"
+            value={product}
+            onChange={setProduct}
+            options={d.products}
+          />
+          <SelectField
+            label="Origen / ubicación"
+            value={from}
+            onChange={setFrom}
+            options={d.locations}
+          />
+          {action === "traslado" && (
+            <SelectField label="Destino" value={to} onChange={setTo} options={d.locations} />
+          )}
+          <NumberField
+            label={action === "traslado" ? "Cantidad · g/und" : "Diferencia física (+/−) · g/und"}
+            value={qty}
+            onChange={setQty}
+          />
+          <Field label="Motivo">
+            <Input required value={reason} onChange={(e) => setReason(e.target.value)} />
+          </Field>
+          <Submit busy={busy} />
+        </form>
+      </FormModal>
+    </>
+  );
 }
 export function ProductionPage() {
- const d=useBusiness();const {run,busy}=useAction();const [lot,setLot]=useState<Lot|null>(null);const [grams,setGrams]=useState(0);const [stage,setStage]=useState('marinado');const [reason,setReason]=useState('');const [history,setHistory]=useState<Lot|null>(null);const stages:ProductionStage[]=['crudo','marinado','ahumado','congelado'];
- return <><PageHeader title="Ahumado y planta" subtitle="Lotes en proceso"/><div className="grid gap-4 md:grid-cols-2">{d.lots.filter(l=>l.stage!=='congelado').map(l=>{const p=d.products.find(p=>p.id===l.productId);const loss=shrinkage(l.initialGrams,l.grams);return <article key={l.id} className="rounded-lg border bg-card p-5"><div className="flex flex-wrap justify-between gap-2"><h2 className="text-lg font-bold">{p?.name}</h2><Status>{l.stage}</Status></div><p className="mt-1 text-xs text-muted-foreground">{l.id} · Vence {l.expiresAt}</p><p className="my-4 text-3xl font-bold">{formatKg(l.grams)}</p><div className="mb-4 flex flex-wrap gap-2"><Status warning={loss>(p?.shrinkagePercent??0)}>{loss>(p?.shrinkagePercent??0)?'Merma requiere revisión':'Correcto'} · {loss.toFixed(1)}%</Status><span className="text-xs">Referencia: {p?.shrinkagePercent}% · Inicial: {formatKg(l.initialGrams)}</span></div><div className="flex flex-wrap gap-2"><Button size="xl" onClick={()=>{setLot(l);setGrams(l.grams);setStage(stages[stages.indexOf(l.stage)+1]??'congelado');}}><ArrowRight/>Siguiente etapa</Button><Button variant="outline" size="xl" aria-label={`Historial ${l.id}`} title="Ver etapas" onClick={()=>setHistory(l)}><Eye/></Button></div></article>;})}</div>{!d.lots.some(l=>l.stage!=='congelado')&&<Empty title="Sin lotes pendientes"/>}<FormModal title="Registrar etapa y peso" open={!!lot} onClose={()=>setLot(null)}><form className="space-y-4" onSubmit={async e=>{e.preventDefault();const ok=await run(async()=>{if(lot)await services.production.advance(lot.id,stage as ProductionStage,grams,reason);return true;});if(ok)setLot(null);}}><p>Inicial: {formatKg(lot?.initialGrams??0)} · Actual: {formatKg(lot?.grams??0)}</p><SelectField label="Etapa" value={stage} onChange={setStage} options={stages.map(s=>({id:s,name:s}))}/><NumberField label="Peso final · gramos" value={grams} onChange={setGrams}/><p>Variación: {shrinkage(lot?.initialGrams??0,grams).toFixed(1)}%</p><Field label="Motivo / observación"><Input value={reason} onChange={e=>setReason(e.target.value)}/></Field><Submit busy={busy}>Confirmar etapa</Submit></form></FormModal><FormModal title="Historial del lote" open={!!history} onClose={()=>setHistory(null)}>{history?.history.map((h,i)=><p key={i} className="border-b py-3">{h.stage} · {formatKg(h.grams)} · {h.actor}<span className="block text-xs">{h.date}</span></p>)}</FormModal></>;
+  const d = useBusiness();
+  const session = useSession();
+  const { run, busy } = useAction();
+  const [lot, setLot] = useState<Lot | null>(null);
+  const [grams, setGrams] = useState(0);
+  const [stage, setStage] = useState("marinado");
+  const [reason, setReason] = useState("");
+  const [history, setHistory] = useState<Lot | null>(null);
+  const stages: ProductionStage[] = ["crudo", "marinado", "ahumado", "congelado"];
+  return (
+    <>
+      <PageHeader title="Ahumado y planta" subtitle="Lotes en proceso" />
+      <div className="grid gap-4 md:grid-cols-2">
+        {d.lots
+          .filter((l) => l.stage !== "congelado")
+          .map((l) => {
+            const p = d.products.find((p) => p.id === l.productId);
+            const loss = shrinkage(l.initialGrams, l.grams);
+            return (
+              <article key={l.id} className="rounded-lg border bg-card p-5">
+                <div className="flex flex-wrap justify-between gap-2">
+                  <h2 className="text-lg font-bold">{p?.name}</h2>
+                  <Status>{l.stage}</Status>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {l.id} · Vence {l.expiresAt}
+                </p>
+                <p className="my-4 text-3xl font-bold">{formatKg(l.grams)}</p>
+                <div className="mb-4 flex flex-wrap gap-2">
+                  <Status warning={loss > (p?.shrinkagePercent ?? 0)}>
+                    {loss > (p?.shrinkagePercent ?? 0) ? "Merma requiere revisión" : "Correcto"} ·{" "}
+                    {loss.toFixed(1)}%
+                  </Status>
+                  <span className="text-xs">
+                    Referencia: {p?.shrinkagePercent}% · Inicial: {formatKg(l.initialGrams)}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="xl"
+                    onClick={() => {
+                      setLot(l);
+                      setGrams(l.grams);
+                      setStage(stages[stages.indexOf(l.stage) + 1] ?? "congelado");
+                    }}
+                  >
+                    <ArrowRight />
+                    Siguiente etapa
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="xl"
+                    aria-label={`Historial ${l.id}`}
+                    title="Ver etapas"
+                    onClick={() => setHistory(l)}
+                  >
+                    <Eye />
+                  </Button>
+                </div>
+              </article>
+            );
+          })}
+      </div>
+      {!d.lots.some((l) => l.stage !== "congelado") && <Empty title="Sin lotes pendientes" />}
+      <FormModal title="Registrar etapa y peso" open={!!lot} onClose={() => setLot(null)}>
+        <form
+          className="space-y-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const ok = await run(async () => {
+              if (lot)
+                await services.production.advance(lot.id, stage as ProductionStage, grams, reason);
+              return true;
+            });
+            if (ok) setLot(null);
+          }}
+        >
+          <p>
+            Inicial: {formatKg(lot?.initialGrams ?? 0)} · Actual: {formatKg(lot?.grams ?? 0)}
+          </p>
+          <SelectField
+            label="Etapa"
+            value={stage}
+            onChange={setStage}
+            options={stages.filter((s, i) => session?.user.role === "admin" ? i > stages.indexOf(lot?.stage ?? "crudo") : i === stages.indexOf(lot?.stage ?? "crudo") + 1).map((s) => ({ id: s, name: s }))}
+          />
+          <NumberField label="Peso final · gramos" value={grams} onChange={setGrams} />
+          <p>Variación: {shrinkage(lot?.initialGrams ?? 0, grams).toFixed(1)}%</p>
+          <Field label="Motivo / observación">
+            <Input value={reason} onChange={(e) => setReason(e.target.value)} />
+          </Field>
+          <Submit busy={busy}>Confirmar etapa</Submit>
+        </form>
+      </FormModal>
+      <FormModal title="Historial del lote" open={!!history} onClose={() => setHistory(null)}>
+        {history?.history.map((h, i) => (
+          <p key={i} className="border-b py-3">
+            {h.stage} · {formatKg(h.grams)} · {h.actor}
+            <span className="block text-xs">{h.date}</span>
+          </p>
+        ))}
+      </FormModal>
+    </>
+  );
 }
 export function RecipesPage() {
- const d=useBusiness();const session=useSession();const {run,busy}=useAction();const [lot,setLot]=useState(d.lots[0]?.id??'');const [reveal,setReveal]=useState<Record<string,string>>({});const [edit,setEdit]=useState(false);const [product,setProduct]=useState('prod-20');const [season,setSeason]=useState('cond1');const [grams,setGrams]=useState(15);
- const current=d.lots.find(l=>l.id===lot);const recipe=d.recipes.find(r=>r.productId===current?.productId);
- return <><PageHeader title="Recetas y condimentos" action={session?.user.role==='admin'?<Button onClick={()=>setEdit(true)}><Plus/>Editar receta</Button>:undefined}/><Table heads={['Alias','Existencias','Mínimo','Acceso']}>{d.seasonings.map(s=><tr key={s.id}><td className={cell}><strong>{s.alias}</strong><p className="text-xs">{reveal[s.id]??'Nombre privado oculto'}</p></td><td className={cell}>{formatKg(s.stockGrams)}</td><td className={cell}><Status warning={s.stockGrams<s.minimumGrams}>{formatKg(s.minimumGrams)}</Status></td><td className={cell}>{session?.user.role==='admin'?<Button variant="outline" onClick={async()=>{const name=await run(()=>services.recipes.reveal(s.id),'Consulta auditada');if(typeof name==='string')setReveal({...reveal,[s.id]:name});}}><Eye/>Revelar con permiso</Button>:<Status>Solo alias</Status>}</td></tr>)}</Table><section className="mt-8 max-w-xl space-y-4"><h2 className="text-xl font-bold">Preparación del lote</h2><SelectField label="Lote" value={lot} onChange={setLot} options={d.lots.filter(l=>l.stage!=='congelado').map(l=>({id:l.id,name:`${d.products.find(p=>p.id===l.productId)?.name} · ${formatKg(l.grams)}`}))}/>{recipe?recipe.lines.map(line=><p key={line.seasoningId} className="flex justify-between border-b py-2"><span>{d.seasonings.find(s=>s.id===line.seasoningId)?.alias}</span><strong>{formatKg(Math.ceil(line.gramsPerKg*(current?.grams??0)/1000))}</strong></p>):<Empty title="Receta pendiente de configurar"/>}<Button size="xl" disabled={!recipe||busy} onClick={()=>run(()=>services.recipes.consume(lot),'Consumo de condimentos confirmado')}><FlaskConical/>Confirmar consumo</Button></section><FormModal title="Editar receta por kilogramo" open={edit} onClose={()=>setEdit(false)}><form className="space-y-4" onSubmit={async e=>{e.preventDefault();const existing=d.recipes.find(r=>r.productId===product)?.lines.filter(l=>l.seasoningId!==season)??[];const ok=await run(async()=>{await services.recipes.save(product,[...existing,{seasoningId:season,gramsPerKg:grams}]);return true;});if(ok)setEdit(false);}}><SelectField label="Producto" value={product} onChange={setProduct} options={d.products}/><SelectField label="Condimento" value={season} onChange={setSeason} options={d.seasonings.map(s=>({id:s.id,name:s.alias}))}/><NumberField label="Gramos por kg" value={grams} onChange={setGrams}/><Submit busy={busy}/></form></FormModal></>;
+  const d = useBusiness();
+  const session = useSession();
+  const { run, busy } = useAction();
+  const [lot, setLot] = useState(d.lots[0]?.id ?? "");
+  const [reveal, setReveal] = useState<Record<string, string>>({});
+  const [edit, setEdit] = useState(false);
+  const [product, setProduct] = useState("prod-20");
+  const [season, setSeason] = useState("cond1");
+  const [grams, setGrams] = useState(15);
+  const current = d.lots.find((l) => l.id === lot);
+  const recipe = d.recipes.find((r) => r.productId === current?.productId);
+  return (
+    <>
+      <PageHeader
+        title="Recetas y condimentos"
+        action={
+          session?.user.role === "admin" ? (
+            <Button onClick={() => setEdit(true)}>
+              <Plus />
+              Editar receta
+            </Button>
+          ) : undefined
+        }
+      />
+      <Table heads={["Alias", "Existencias", "Mínimo", "Acceso"]}>
+        {d.seasonings.map((s) => (
+          <tr key={s.id}>
+            <td className={cell}>
+              <strong>{s.alias}</strong>
+              <p className="text-xs">{reveal[s.id] ?? "Nombre privado oculto"}</p>
+            </td>
+            <td className={cell}>{formatKg(s.stockGrams)}</td>
+            <td className={cell}>
+              <Status warning={s.stockGrams < s.minimumGrams}>{formatKg(s.minimumGrams)}</Status>
+            </td>
+            <td className={cell}>
+              {session?.user.role === "admin" ? (
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    const name = await run(
+                      () => services.recipes.reveal(s.id),
+                      "Consulta auditada",
+                    );
+                    if (typeof name === "string") setReveal({ ...reveal, [s.id]: name });
+                  }}
+                >
+                  <Eye />
+                  Revelar con permiso
+                </Button>
+              ) : (
+                <Status>Solo alias</Status>
+              )}
+            </td>
+          </tr>
+        ))}
+      </Table>
+      <section className="mt-8 max-w-xl space-y-4">
+        <h2 className="text-xl font-bold">Preparación del lote</h2>
+        <SelectField
+          label="Lote"
+          value={lot}
+          onChange={setLot}
+          options={d.lots
+            .filter((l) => l.stage !== "congelado")
+            .map((l) => ({
+              id: l.id,
+              name: `${d.products.find((p) => p.id === l.productId)?.name} · ${formatKg(l.grams)}`,
+            }))}
+        />
+        {recipe ? (
+          recipe.lines.map((line) => (
+            <p key={line.seasoningId} className="flex justify-between border-b py-2">
+              <span>{d.seasonings.find((s) => s.id === line.seasoningId)?.alias}</span>
+              <strong>
+                {formatKg(Math.ceil((line.gramsPerKg * (current?.grams ?? 0)) / 1000))}
+              </strong>
+            </p>
+          ))
+        ) : (
+          <Empty title="Receta pendiente de configurar" />
+        )}
+        <Button
+          size="xl"
+          disabled={!recipe || busy}
+          onClick={() =>
+            run(() => services.recipes.consume(lot), "Consumo de condimentos confirmado")
+          }
+        >
+          <FlaskConical />
+          Confirmar consumo
+        </Button>
+      </section>
+      <FormModal title="Editar receta por kilogramo" open={edit} onClose={() => setEdit(false)}>
+        <form
+          className="space-y-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const existing =
+              d.recipes
+                .find((r) => r.productId === product)
+                ?.lines.filter((l) => l.seasoningId !== season) ?? [];
+            const ok = await run(async () => {
+              await services.recipes.save(product, [
+                ...existing,
+                { seasoningId: season, gramsPerKg: grams },
+              ]);
+              return true;
+            });
+            if (ok) setEdit(false);
+          }}
+        >
+          <SelectField
+            label="Producto"
+            value={product}
+            onChange={setProduct}
+            options={d.products}
+          />
+          <SelectField
+            label="Condimento"
+            value={season}
+            onChange={setSeason}
+            options={d.seasonings.map((s) => ({ id: s.id, name: s.alias }))}
+          />
+          <NumberField label="Gramos por kg" value={grams} onChange={setGrams} />
+          <Submit busy={busy} />
+        </form>
+      </FormModal>
+    </>
+  );
 }

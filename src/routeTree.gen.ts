@@ -11,16 +11,58 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ContadorRouteImport } from './routes/contador'
+import { Route as GaleriaRouteImport } from './routes/galeria'
 import { Route as InquilinoRouteImport } from './routes/inquilino'
+import { Route as PlantaRouteImport } from './routes/planta'
+import { Route as RecepcionRouteImport } from './routes/recepcion'
+import { Route as RutaRouteImport } from './routes/ruta'
+import { Route as SuperadminRouteImport } from './routes/superadmin'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAjustesRouteImport } from './routes/admin.ajustes'
+import { Route as AdminAuditoriaRouteImport } from './routes/admin.auditoria'
+import { Route as AdminCajaRouteImport } from './routes/admin.caja'
+import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
+import { Route as AdminComprasRouteImport } from './routes/admin.compras'
+import { Route as AdminConfiguracionRouteImport } from './routes/admin.configuracion'
+import { Route as AdminEmpleadosRouteImport } from './routes/admin.empleados'
+import { Route as AdminGastosRouteImport } from './routes/admin.gastos'
+import { Route as AdminImportacionesRouteImport } from './routes/admin.importaciones'
 import { Route as AdminInquilinosRouteImport } from './routes/admin.inquilinos'
+import { Route as AdminInventarioRouteImport } from './routes/admin.inventario'
 import { Route as AdminLocalesRouteImport } from './routes/admin.locales'
+import { Route as AdminNominaRouteImport } from './routes/admin.nomina'
 import { Route as AdminPagosRouteImport } from './routes/admin.pagos'
+import { Route as AdminPlantaRouteImport } from './routes/admin.planta'
+import { Route as AdminPosRouteImport } from './routes/admin.pos'
+import { Route as AdminProductosRouteImport } from './routes/admin.productos'
+import { Route as AdminRecepcionRouteImport } from './routes/admin.recepcion'
+import { Route as AdminRecetasRouteImport } from './routes/admin.recetas'
+import { Route as AdminRutasRouteImport } from './routes/admin.rutas'
+import { Route as AdminVentasRouteImport } from './routes/admin.ventas'
+import { Route as ContadorIndexRouteImport } from './routes/contador.index'
+import { Route as ContadorAuditoriaRouteImport } from './routes/contador.auditoria'
+import { Route as ContadorClientesRouteImport } from './routes/contador.clientes'
+import { Route as ContadorGastosRouteImport } from './routes/contador.gastos'
+import { Route as ContadorNominaRouteImport } from './routes/contador.nomina'
+import { Route as GaleriaIndexRouteImport } from './routes/galeria.index'
+import { Route as GaleriaCajaRouteImport } from './routes/galeria.caja'
+import { Route as GaleriaClientesRouteImport } from './routes/galeria.clientes'
+import { Route as GaleriaVentasRouteImport } from './routes/galeria.ventas'
 import { Route as InquilinoIndexRouteImport } from './routes/inquilino.index'
 import { Route as InquilinoDisponiblesRouteImport } from './routes/inquilino.disponibles'
 import { Route as InquilinoHistorialRouteImport } from './routes/inquilino.historial'
 import { Route as InquilinoPagarRouteImport } from './routes/inquilino.pagar'
+import { Route as PlantaIndexRouteImport } from './routes/planta.index'
+import { Route as PlantaRecetasRouteImport } from './routes/planta.recetas'
+import { Route as RecepcionIndexRouteImport } from './routes/recepcion.index'
+import { Route as RecepcionInventarioRouteImport } from './routes/recepcion.inventario'
+import { Route as RutaIndexRouteImport } from './routes/ruta.index'
+import { Route as RutaClientesRouteImport } from './routes/ruta.clientes'
+import { Route as RutaVenderRouteImport } from './routes/ruta.vender'
+import { Route as RutaVentasRouteImport } from './routes/ruta.ventas'
+import { Route as SuperadminIndexRouteImport } from './routes/superadmin.index'
+import { Route as SuperadminAuditoriaRouteImport } from './routes/superadmin.auditoria'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -32,9 +74,39 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContadorRoute = ContadorRouteImport.update({
+  id: '/contador',
+  path: '/contador',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GaleriaRoute = GaleriaRouteImport.update({
+  id: '/galeria',
+  path: '/galeria',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InquilinoRoute = InquilinoRouteImport.update({
   id: '/inquilino',
   path: '/inquilino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantaRoute = PlantaRouteImport.update({
+  id: '/planta',
+  path: '/planta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecepcionRoute = RecepcionRouteImport.update({
+  id: '/recepcion',
+  path: '/recepcion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RutaRoute = RutaRouteImport.update({
+  id: '/ruta',
+  path: '/ruta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperadminRoute = SuperadminRouteImport.update({
+  id: '/superadmin',
+  path: '/superadmin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -47,9 +119,54 @@ const AdminAjustesRoute = AdminAjustesRouteImport.update({
   path: '/ajustes',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAuditoriaRoute = AdminAuditoriaRouteImport.update({
+  id: '/auditoria',
+  path: '/auditoria',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCajaRoute = AdminCajaRouteImport.update({
+  id: '/caja',
+  path: '/caja',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminClientesRoute = AdminClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminComprasRoute = AdminComprasRouteImport.update({
+  id: '/compras',
+  path: '/compras',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminConfiguracionRoute = AdminConfiguracionRouteImport.update({
+  id: '/configuracion',
+  path: '/configuracion',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEmpleadosRoute = AdminEmpleadosRouteImport.update({
+  id: '/empleados',
+  path: '/empleados',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGastosRoute = AdminGastosRouteImport.update({
+  id: '/gastos',
+  path: '/gastos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminImportacionesRoute = AdminImportacionesRouteImport.update({
+  id: '/importaciones',
+  path: '/importaciones',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminInquilinosRoute = AdminInquilinosRouteImport.update({
   id: '/inquilinos',
   path: '/inquilinos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInventarioRoute = AdminInventarioRouteImport.update({
+  id: '/inventario',
+  path: '/inventario',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLocalesRoute = AdminLocalesRouteImport.update({
@@ -57,10 +174,95 @@ const AdminLocalesRoute = AdminLocalesRouteImport.update({
   path: '/locales',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminNominaRoute = AdminNominaRouteImport.update({
+  id: '/nomina',
+  path: '/nomina',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPagosRoute = AdminPagosRouteImport.update({
   id: '/pagos',
   path: '/pagos',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminPlantaRoute = AdminPlantaRouteImport.update({
+  id: '/planta',
+  path: '/planta',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPosRoute = AdminPosRouteImport.update({
+  id: '/pos',
+  path: '/pos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductosRoute = AdminProductosRouteImport.update({
+  id: '/productos',
+  path: '/productos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRecepcionRoute = AdminRecepcionRouteImport.update({
+  id: '/recepcion',
+  path: '/recepcion',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRecetasRoute = AdminRecetasRouteImport.update({
+  id: '/recetas',
+  path: '/recetas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRutasRoute = AdminRutasRouteImport.update({
+  id: '/rutas',
+  path: '/rutas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVentasRoute = AdminVentasRouteImport.update({
+  id: '/ventas',
+  path: '/ventas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ContadorIndexRoute = ContadorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ContadorRoute,
+} as any)
+const ContadorAuditoriaRoute = ContadorAuditoriaRouteImport.update({
+  id: '/auditoria',
+  path: '/auditoria',
+  getParentRoute: () => ContadorRoute,
+} as any)
+const ContadorClientesRoute = ContadorClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => ContadorRoute,
+} as any)
+const ContadorGastosRoute = ContadorGastosRouteImport.update({
+  id: '/gastos',
+  path: '/gastos',
+  getParentRoute: () => ContadorRoute,
+} as any)
+const ContadorNominaRoute = ContadorNominaRouteImport.update({
+  id: '/nomina',
+  path: '/nomina',
+  getParentRoute: () => ContadorRoute,
+} as any)
+const GaleriaIndexRoute = GaleriaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GaleriaRoute,
+} as any)
+const GaleriaCajaRoute = GaleriaCajaRouteImport.update({
+  id: '/caja',
+  path: '/caja',
+  getParentRoute: () => GaleriaRoute,
+} as any)
+const GaleriaClientesRoute = GaleriaClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => GaleriaRoute,
+} as any)
+const GaleriaVentasRoute = GaleriaVentasRouteImport.update({
+  id: '/ventas',
+  path: '/ventas',
+  getParentRoute: () => GaleriaRoute,
 } as any)
 const InquilinoIndexRoute = InquilinoIndexRouteImport.update({
   id: '/',
@@ -82,95 +284,391 @@ const InquilinoPagarRoute = InquilinoPagarRouteImport.update({
   path: '/pagar',
   getParentRoute: () => InquilinoRoute,
 } as any)
+const PlantaIndexRoute = PlantaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlantaRoute,
+} as any)
+const PlantaRecetasRoute = PlantaRecetasRouteImport.update({
+  id: '/recetas',
+  path: '/recetas',
+  getParentRoute: () => PlantaRoute,
+} as any)
+const RecepcionIndexRoute = RecepcionIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RecepcionRoute,
+} as any)
+const RecepcionInventarioRoute = RecepcionInventarioRouteImport.update({
+  id: '/inventario',
+  path: '/inventario',
+  getParentRoute: () => RecepcionRoute,
+} as any)
+const RutaIndexRoute = RutaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RutaRoute,
+} as any)
+const RutaClientesRoute = RutaClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => RutaRoute,
+} as any)
+const RutaVenderRoute = RutaVenderRouteImport.update({
+  id: '/vender',
+  path: '/vender',
+  getParentRoute: () => RutaRoute,
+} as any)
+const RutaVentasRoute = RutaVentasRouteImport.update({
+  id: '/ventas',
+  path: '/ventas',
+  getParentRoute: () => RutaRoute,
+} as any)
+const SuperadminIndexRoute = SuperadminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SuperadminRoute,
+} as any)
+const SuperadminAuditoriaRoute = SuperadminAuditoriaRouteImport.update({
+  id: '/auditoria',
+  path: '/auditoria',
+  getParentRoute: () => SuperadminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/contador': typeof ContadorRouteWithChildren
+  '/galeria': typeof GaleriaRouteWithChildren
   '/inquilino': typeof InquilinoRouteWithChildren
+  '/planta': typeof PlantaRouteWithChildren
+  '/recepcion': typeof RecepcionRouteWithChildren
+  '/ruta': typeof RutaRouteWithChildren
+  '/superadmin': typeof SuperadminRouteWithChildren
   '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
+  '/admin/caja': typeof AdminCajaRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/compras': typeof AdminComprasRoute
+  '/admin/configuracion': typeof AdminConfiguracionRoute
+  '/admin/empleados': typeof AdminEmpleadosRoute
+  '/admin/gastos': typeof AdminGastosRoute
+  '/admin/importaciones': typeof AdminImportacionesRoute
   '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/inventario': typeof AdminInventarioRoute
   '/admin/locales': typeof AdminLocalesRoute
+  '/admin/nomina': typeof AdminNominaRoute
   '/admin/pagos': typeof AdminPagosRoute
+  '/admin/planta': typeof AdminPlantaRoute
+  '/admin/pos': typeof AdminPosRoute
+  '/admin/productos': typeof AdminProductosRoute
+  '/admin/recepcion': typeof AdminRecepcionRoute
+  '/admin/recetas': typeof AdminRecetasRoute
+  '/admin/rutas': typeof AdminRutasRoute
+  '/admin/ventas': typeof AdminVentasRoute
+  '/contador/auditoria': typeof ContadorAuditoriaRoute
+  '/contador/clientes': typeof ContadorClientesRoute
+  '/contador/gastos': typeof ContadorGastosRoute
+  '/contador/nomina': typeof ContadorNominaRoute
+  '/galeria/caja': typeof GaleriaCajaRoute
+  '/galeria/clientes': typeof GaleriaClientesRoute
+  '/galeria/ventas': typeof GaleriaVentasRoute
   '/inquilino/disponibles': typeof InquilinoDisponiblesRoute
   '/inquilino/historial': typeof InquilinoHistorialRoute
   '/inquilino/pagar': typeof InquilinoPagarRoute
+  '/planta/recetas': typeof PlantaRecetasRoute
+  '/recepcion/inventario': typeof RecepcionInventarioRoute
+  '/ruta/clientes': typeof RutaClientesRoute
+  '/ruta/vender': typeof RutaVenderRoute
+  '/ruta/ventas': typeof RutaVentasRoute
+  '/superadmin/auditoria': typeof SuperadminAuditoriaRoute
   '/admin/': typeof AdminIndexRoute
+  '/contador/': typeof ContadorIndexRoute
+  '/galeria/': typeof GaleriaIndexRoute
   '/inquilino/': typeof InquilinoIndexRoute
+  '/planta/': typeof PlantaIndexRoute
+  '/recepcion/': typeof RecepcionIndexRoute
+  '/ruta/': typeof RutaIndexRoute
+  '/superadmin/': typeof SuperadminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
+  '/admin/caja': typeof AdminCajaRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/compras': typeof AdminComprasRoute
+  '/admin/configuracion': typeof AdminConfiguracionRoute
+  '/admin/empleados': typeof AdminEmpleadosRoute
+  '/admin/gastos': typeof AdminGastosRoute
+  '/admin/importaciones': typeof AdminImportacionesRoute
   '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/inventario': typeof AdminInventarioRoute
   '/admin/locales': typeof AdminLocalesRoute
+  '/admin/nomina': typeof AdminNominaRoute
   '/admin/pagos': typeof AdminPagosRoute
+  '/admin/planta': typeof AdminPlantaRoute
+  '/admin/pos': typeof AdminPosRoute
+  '/admin/productos': typeof AdminProductosRoute
+  '/admin/recepcion': typeof AdminRecepcionRoute
+  '/admin/recetas': typeof AdminRecetasRoute
+  '/admin/rutas': typeof AdminRutasRoute
+  '/admin/ventas': typeof AdminVentasRoute
+  '/contador/auditoria': typeof ContadorAuditoriaRoute
+  '/contador/clientes': typeof ContadorClientesRoute
+  '/contador/gastos': typeof ContadorGastosRoute
+  '/contador/nomina': typeof ContadorNominaRoute
+  '/galeria/caja': typeof GaleriaCajaRoute
+  '/galeria/clientes': typeof GaleriaClientesRoute
+  '/galeria/ventas': typeof GaleriaVentasRoute
   '/inquilino/disponibles': typeof InquilinoDisponiblesRoute
   '/inquilino/historial': typeof InquilinoHistorialRoute
   '/inquilino/pagar': typeof InquilinoPagarRoute
+  '/planta/recetas': typeof PlantaRecetasRoute
+  '/recepcion/inventario': typeof RecepcionInventarioRoute
+  '/ruta/clientes': typeof RutaClientesRoute
+  '/ruta/vender': typeof RutaVenderRoute
+  '/ruta/ventas': typeof RutaVentasRoute
+  '/superadmin/auditoria': typeof SuperadminAuditoriaRoute
   '/admin': typeof AdminIndexRoute
+  '/contador': typeof ContadorIndexRoute
+  '/galeria': typeof GaleriaIndexRoute
   '/inquilino': typeof InquilinoIndexRoute
+  '/planta': typeof PlantaIndexRoute
+  '/recepcion': typeof RecepcionIndexRoute
+  '/ruta': typeof RutaIndexRoute
+  '/superadmin': typeof SuperadminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/contador': typeof ContadorRouteWithChildren
+  '/galeria': typeof GaleriaRouteWithChildren
   '/inquilino': typeof InquilinoRouteWithChildren
+  '/planta': typeof PlantaRouteWithChildren
+  '/recepcion': typeof RecepcionRouteWithChildren
+  '/ruta': typeof RutaRouteWithChildren
+  '/superadmin': typeof SuperadminRouteWithChildren
   '/admin/ajustes': typeof AdminAjustesRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
+  '/admin/caja': typeof AdminCajaRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/compras': typeof AdminComprasRoute
+  '/admin/configuracion': typeof AdminConfiguracionRoute
+  '/admin/empleados': typeof AdminEmpleadosRoute
+  '/admin/gastos': typeof AdminGastosRoute
+  '/admin/importaciones': typeof AdminImportacionesRoute
   '/admin/inquilinos': typeof AdminInquilinosRoute
+  '/admin/inventario': typeof AdminInventarioRoute
   '/admin/locales': typeof AdminLocalesRoute
+  '/admin/nomina': typeof AdminNominaRoute
   '/admin/pagos': typeof AdminPagosRoute
+  '/admin/planta': typeof AdminPlantaRoute
+  '/admin/pos': typeof AdminPosRoute
+  '/admin/productos': typeof AdminProductosRoute
+  '/admin/recepcion': typeof AdminRecepcionRoute
+  '/admin/recetas': typeof AdminRecetasRoute
+  '/admin/rutas': typeof AdminRutasRoute
+  '/admin/ventas': typeof AdminVentasRoute
+  '/contador/auditoria': typeof ContadorAuditoriaRoute
+  '/contador/clientes': typeof ContadorClientesRoute
+  '/contador/gastos': typeof ContadorGastosRoute
+  '/contador/nomina': typeof ContadorNominaRoute
+  '/galeria/caja': typeof GaleriaCajaRoute
+  '/galeria/clientes': typeof GaleriaClientesRoute
+  '/galeria/ventas': typeof GaleriaVentasRoute
   '/inquilino/disponibles': typeof InquilinoDisponiblesRoute
   '/inquilino/historial': typeof InquilinoHistorialRoute
   '/inquilino/pagar': typeof InquilinoPagarRoute
+  '/planta/recetas': typeof PlantaRecetasRoute
+  '/recepcion/inventario': typeof RecepcionInventarioRoute
+  '/ruta/clientes': typeof RutaClientesRoute
+  '/ruta/vender': typeof RutaVenderRoute
+  '/ruta/ventas': typeof RutaVentasRoute
+  '/superadmin/auditoria': typeof SuperadminAuditoriaRoute
   '/admin/': typeof AdminIndexRoute
+  '/contador/': typeof ContadorIndexRoute
+  '/galeria/': typeof GaleriaIndexRoute
   '/inquilino/': typeof InquilinoIndexRoute
+  '/planta/': typeof PlantaIndexRoute
+  '/recepcion/': typeof RecepcionIndexRoute
+  '/ruta/': typeof RutaIndexRoute
+  '/superadmin/': typeof SuperadminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
+    | '/contador'
+    | '/galeria'
     | '/inquilino'
+    | '/planta'
+    | '/recepcion'
+    | '/ruta'
+    | '/superadmin'
     | '/admin/ajustes'
+    | '/admin/auditoria'
+    | '/admin/caja'
+    | '/admin/clientes'
+    | '/admin/compras'
+    | '/admin/configuracion'
+    | '/admin/empleados'
+    | '/admin/gastos'
+    | '/admin/importaciones'
     | '/admin/inquilinos'
+    | '/admin/inventario'
     | '/admin/locales'
+    | '/admin/nomina'
     | '/admin/pagos'
+    | '/admin/planta'
+    | '/admin/pos'
+    | '/admin/productos'
+    | '/admin/recepcion'
+    | '/admin/recetas'
+    | '/admin/rutas'
+    | '/admin/ventas'
+    | '/contador/auditoria'
+    | '/contador/clientes'
+    | '/contador/gastos'
+    | '/contador/nomina'
+    | '/galeria/caja'
+    | '/galeria/clientes'
+    | '/galeria/ventas'
     | '/inquilino/disponibles'
     | '/inquilino/historial'
     | '/inquilino/pagar'
+    | '/planta/recetas'
+    | '/recepcion/inventario'
+    | '/ruta/clientes'
+    | '/ruta/vender'
+    | '/ruta/ventas'
+    | '/superadmin/auditoria'
     | '/admin/'
+    | '/contador/'
+    | '/galeria/'
     | '/inquilino/'
+    | '/planta/'
+    | '/recepcion/'
+    | '/ruta/'
+    | '/superadmin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin/ajustes'
+    | '/admin/auditoria'
+    | '/admin/caja'
+    | '/admin/clientes'
+    | '/admin/compras'
+    | '/admin/configuracion'
+    | '/admin/empleados'
+    | '/admin/gastos'
+    | '/admin/importaciones'
     | '/admin/inquilinos'
+    | '/admin/inventario'
     | '/admin/locales'
+    | '/admin/nomina'
     | '/admin/pagos'
+    | '/admin/planta'
+    | '/admin/pos'
+    | '/admin/productos'
+    | '/admin/recepcion'
+    | '/admin/recetas'
+    | '/admin/rutas'
+    | '/admin/ventas'
+    | '/contador/auditoria'
+    | '/contador/clientes'
+    | '/contador/gastos'
+    | '/contador/nomina'
+    | '/galeria/caja'
+    | '/galeria/clientes'
+    | '/galeria/ventas'
     | '/inquilino/disponibles'
     | '/inquilino/historial'
     | '/inquilino/pagar'
+    | '/planta/recetas'
+    | '/recepcion/inventario'
+    | '/ruta/clientes'
+    | '/ruta/vender'
+    | '/ruta/ventas'
+    | '/superadmin/auditoria'
     | '/admin'
+    | '/contador'
+    | '/galeria'
     | '/inquilino'
+    | '/planta'
+    | '/recepcion'
+    | '/ruta'
+    | '/superadmin'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/contador'
+    | '/galeria'
     | '/inquilino'
+    | '/planta'
+    | '/recepcion'
+    | '/ruta'
+    | '/superadmin'
     | '/admin/ajustes'
+    | '/admin/auditoria'
+    | '/admin/caja'
+    | '/admin/clientes'
+    | '/admin/compras'
+    | '/admin/configuracion'
+    | '/admin/empleados'
+    | '/admin/gastos'
+    | '/admin/importaciones'
     | '/admin/inquilinos'
+    | '/admin/inventario'
     | '/admin/locales'
+    | '/admin/nomina'
     | '/admin/pagos'
+    | '/admin/planta'
+    | '/admin/pos'
+    | '/admin/productos'
+    | '/admin/recepcion'
+    | '/admin/recetas'
+    | '/admin/rutas'
+    | '/admin/ventas'
+    | '/contador/auditoria'
+    | '/contador/clientes'
+    | '/contador/gastos'
+    | '/contador/nomina'
+    | '/galeria/caja'
+    | '/galeria/clientes'
+    | '/galeria/ventas'
     | '/inquilino/disponibles'
     | '/inquilino/historial'
     | '/inquilino/pagar'
+    | '/planta/recetas'
+    | '/recepcion/inventario'
+    | '/ruta/clientes'
+    | '/ruta/vender'
+    | '/ruta/ventas'
+    | '/superadmin/auditoria'
     | '/admin/'
+    | '/contador/'
+    | '/galeria/'
     | '/inquilino/'
+    | '/planta/'
+    | '/recepcion/'
+    | '/ruta/'
+    | '/superadmin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  ContadorRoute: typeof ContadorRouteWithChildren
+  GaleriaRoute: typeof GaleriaRouteWithChildren
   InquilinoRoute: typeof InquilinoRouteWithChildren
+  PlantaRoute: typeof PlantaRouteWithChildren
+  RecepcionRoute: typeof RecepcionRouteWithChildren
+  RutaRoute: typeof RutaRouteWithChildren
+  SuperadminRoute: typeof SuperadminRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -189,11 +687,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contador': {
+      id: '/contador'
+      path: '/contador'
+      fullPath: '/contador'
+      preLoaderRoute: typeof ContadorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galeria': {
+      id: '/galeria'
+      path: '/galeria'
+      fullPath: '/galeria'
+      preLoaderRoute: typeof GaleriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inquilino': {
       id: '/inquilino'
       path: '/inquilino'
       fullPath: '/inquilino'
       preLoaderRoute: typeof InquilinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planta': {
+      id: '/planta'
+      path: '/planta'
+      fullPath: '/planta'
+      preLoaderRoute: typeof PlantaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recepcion': {
+      id: '/recepcion'
+      path: '/recepcion'
+      fullPath: '/recepcion'
+      preLoaderRoute: typeof RecepcionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ruta': {
+      id: '/ruta'
+      path: '/ruta'
+      fullPath: '/ruta'
+      preLoaderRoute: typeof RutaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/superadmin': {
+      id: '/superadmin'
+      path: '/superadmin'
+      fullPath: '/superadmin'
+      preLoaderRoute: typeof SuperadminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -210,11 +750,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAjustesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/auditoria': {
+      id: '/admin/auditoria'
+      path: '/auditoria'
+      fullPath: '/admin/auditoria'
+      preLoaderRoute: typeof AdminAuditoriaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/caja': {
+      id: '/admin/caja'
+      path: '/caja'
+      fullPath: '/admin/caja'
+      preLoaderRoute: typeof AdminCajaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/clientes': {
+      id: '/admin/clientes'
+      path: '/clientes'
+      fullPath: '/admin/clientes'
+      preLoaderRoute: typeof AdminClientesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/compras': {
+      id: '/admin/compras'
+      path: '/compras'
+      fullPath: '/admin/compras'
+      preLoaderRoute: typeof AdminComprasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/configuracion': {
+      id: '/admin/configuracion'
+      path: '/configuracion'
+      fullPath: '/admin/configuracion'
+      preLoaderRoute: typeof AdminConfiguracionRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/empleados': {
+      id: '/admin/empleados'
+      path: '/empleados'
+      fullPath: '/admin/empleados'
+      preLoaderRoute: typeof AdminEmpleadosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/gastos': {
+      id: '/admin/gastos'
+      path: '/gastos'
+      fullPath: '/admin/gastos'
+      preLoaderRoute: typeof AdminGastosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/importaciones': {
+      id: '/admin/importaciones'
+      path: '/importaciones'
+      fullPath: '/admin/importaciones'
+      preLoaderRoute: typeof AdminImportacionesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/inquilinos': {
       id: '/admin/inquilinos'
       path: '/inquilinos'
       fullPath: '/admin/inquilinos'
       preLoaderRoute: typeof AdminInquilinosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inventario': {
+      id: '/admin/inventario'
+      path: '/inventario'
+      fullPath: '/admin/inventario'
+      preLoaderRoute: typeof AdminInventarioRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/locales': {
@@ -224,12 +827,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLocalesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/nomina': {
+      id: '/admin/nomina'
+      path: '/nomina'
+      fullPath: '/admin/nomina'
+      preLoaderRoute: typeof AdminNominaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pagos': {
       id: '/admin/pagos'
       path: '/pagos'
       fullPath: '/admin/pagos'
       preLoaderRoute: typeof AdminPagosRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/planta': {
+      id: '/admin/planta'
+      path: '/planta'
+      fullPath: '/admin/planta'
+      preLoaderRoute: typeof AdminPlantaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pos': {
+      id: '/admin/pos'
+      path: '/pos'
+      fullPath: '/admin/pos'
+      preLoaderRoute: typeof AdminPosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/productos': {
+      id: '/admin/productos'
+      path: '/productos'
+      fullPath: '/admin/productos'
+      preLoaderRoute: typeof AdminProductosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/recepcion': {
+      id: '/admin/recepcion'
+      path: '/recepcion'
+      fullPath: '/admin/recepcion'
+      preLoaderRoute: typeof AdminRecepcionRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/recetas': {
+      id: '/admin/recetas'
+      path: '/recetas'
+      fullPath: '/admin/recetas'
+      preLoaderRoute: typeof AdminRecetasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/rutas': {
+      id: '/admin/rutas'
+      path: '/rutas'
+      fullPath: '/admin/rutas'
+      preLoaderRoute: typeof AdminRutasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ventas': {
+      id: '/admin/ventas'
+      path: '/ventas'
+      fullPath: '/admin/ventas'
+      preLoaderRoute: typeof AdminVentasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/contador/': {
+      id: '/contador/'
+      path: '/'
+      fullPath: '/contador/'
+      preLoaderRoute: typeof ContadorIndexRouteImport
+      parentRoute: typeof ContadorRoute
+    }
+    '/contador/auditoria': {
+      id: '/contador/auditoria'
+      path: '/auditoria'
+      fullPath: '/contador/auditoria'
+      preLoaderRoute: typeof ContadorAuditoriaRouteImport
+      parentRoute: typeof ContadorRoute
+    }
+    '/contador/clientes': {
+      id: '/contador/clientes'
+      path: '/clientes'
+      fullPath: '/contador/clientes'
+      preLoaderRoute: typeof ContadorClientesRouteImport
+      parentRoute: typeof ContadorRoute
+    }
+    '/contador/gastos': {
+      id: '/contador/gastos'
+      path: '/gastos'
+      fullPath: '/contador/gastos'
+      preLoaderRoute: typeof ContadorGastosRouteImport
+      parentRoute: typeof ContadorRoute
+    }
+    '/contador/nomina': {
+      id: '/contador/nomina'
+      path: '/nomina'
+      fullPath: '/contador/nomina'
+      preLoaderRoute: typeof ContadorNominaRouteImport
+      parentRoute: typeof ContadorRoute
+    }
+    '/galeria/': {
+      id: '/galeria/'
+      path: '/'
+      fullPath: '/galeria/'
+      preLoaderRoute: typeof GaleriaIndexRouteImport
+      parentRoute: typeof GaleriaRoute
+    }
+    '/galeria/caja': {
+      id: '/galeria/caja'
+      path: '/caja'
+      fullPath: '/galeria/caja'
+      preLoaderRoute: typeof GaleriaCajaRouteImport
+      parentRoute: typeof GaleriaRoute
+    }
+    '/galeria/clientes': {
+      id: '/galeria/clientes'
+      path: '/clientes'
+      fullPath: '/galeria/clientes'
+      preLoaderRoute: typeof GaleriaClientesRouteImport
+      parentRoute: typeof GaleriaRoute
+    }
+    '/galeria/ventas': {
+      id: '/galeria/ventas'
+      path: '/ventas'
+      fullPath: '/galeria/ventas'
+      preLoaderRoute: typeof GaleriaVentasRouteImport
+      parentRoute: typeof GaleriaRoute
     }
     '/inquilino/': {
       id: '/inquilino/'
@@ -259,26 +981,167 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InquilinoPagarRouteImport
       parentRoute: typeof InquilinoRoute
     }
+    '/planta/': {
+      id: '/planta/'
+      path: '/'
+      fullPath: '/planta/'
+      preLoaderRoute: typeof PlantaIndexRouteImport
+      parentRoute: typeof PlantaRoute
+    }
+    '/planta/recetas': {
+      id: '/planta/recetas'
+      path: '/recetas'
+      fullPath: '/planta/recetas'
+      preLoaderRoute: typeof PlantaRecetasRouteImport
+      parentRoute: typeof PlantaRoute
+    }
+    '/recepcion/': {
+      id: '/recepcion/'
+      path: '/'
+      fullPath: '/recepcion/'
+      preLoaderRoute: typeof RecepcionIndexRouteImport
+      parentRoute: typeof RecepcionRoute
+    }
+    '/recepcion/inventario': {
+      id: '/recepcion/inventario'
+      path: '/inventario'
+      fullPath: '/recepcion/inventario'
+      preLoaderRoute: typeof RecepcionInventarioRouteImport
+      parentRoute: typeof RecepcionRoute
+    }
+    '/ruta/': {
+      id: '/ruta/'
+      path: '/'
+      fullPath: '/ruta/'
+      preLoaderRoute: typeof RutaIndexRouteImport
+      parentRoute: typeof RutaRoute
+    }
+    '/ruta/clientes': {
+      id: '/ruta/clientes'
+      path: '/clientes'
+      fullPath: '/ruta/clientes'
+      preLoaderRoute: typeof RutaClientesRouteImport
+      parentRoute: typeof RutaRoute
+    }
+    '/ruta/vender': {
+      id: '/ruta/vender'
+      path: '/vender'
+      fullPath: '/ruta/vender'
+      preLoaderRoute: typeof RutaVenderRouteImport
+      parentRoute: typeof RutaRoute
+    }
+    '/ruta/ventas': {
+      id: '/ruta/ventas'
+      path: '/ventas'
+      fullPath: '/ruta/ventas'
+      preLoaderRoute: typeof RutaVentasRouteImport
+      parentRoute: typeof RutaRoute
+    }
+    '/superadmin/': {
+      id: '/superadmin/'
+      path: '/'
+      fullPath: '/superadmin/'
+      preLoaderRoute: typeof SuperadminIndexRouteImport
+      parentRoute: typeof SuperadminRoute
+    }
+    '/superadmin/auditoria': {
+      id: '/superadmin/auditoria'
+      path: '/auditoria'
+      fullPath: '/superadmin/auditoria'
+      preLoaderRoute: typeof SuperadminAuditoriaRouteImport
+      parentRoute: typeof SuperadminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminAjustesRoute: typeof AdminAjustesRoute
+  AdminAuditoriaRoute: typeof AdminAuditoriaRoute
+  AdminCajaRoute: typeof AdminCajaRoute
+  AdminClientesRoute: typeof AdminClientesRoute
+  AdminComprasRoute: typeof AdminComprasRoute
+  AdminConfiguracionRoute: typeof AdminConfiguracionRoute
+  AdminEmpleadosRoute: typeof AdminEmpleadosRoute
+  AdminGastosRoute: typeof AdminGastosRoute
+  AdminImportacionesRoute: typeof AdminImportacionesRoute
   AdminInquilinosRoute: typeof AdminInquilinosRoute
+  AdminInventarioRoute: typeof AdminInventarioRoute
   AdminLocalesRoute: typeof AdminLocalesRoute
+  AdminNominaRoute: typeof AdminNominaRoute
   AdminPagosRoute: typeof AdminPagosRoute
+  AdminPlantaRoute: typeof AdminPlantaRoute
+  AdminPosRoute: typeof AdminPosRoute
+  AdminProductosRoute: typeof AdminProductosRoute
+  AdminRecepcionRoute: typeof AdminRecepcionRoute
+  AdminRecetasRoute: typeof AdminRecetasRoute
+  AdminRutasRoute: typeof AdminRutasRoute
+  AdminVentasRoute: typeof AdminVentasRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAjustesRoute: AdminAjustesRoute,
+  AdminAuditoriaRoute: AdminAuditoriaRoute,
+  AdminCajaRoute: AdminCajaRoute,
+  AdminClientesRoute: AdminClientesRoute,
+  AdminComprasRoute: AdminComprasRoute,
+  AdminConfiguracionRoute: AdminConfiguracionRoute,
+  AdminEmpleadosRoute: AdminEmpleadosRoute,
+  AdminGastosRoute: AdminGastosRoute,
+  AdminImportacionesRoute: AdminImportacionesRoute,
   AdminInquilinosRoute: AdminInquilinosRoute,
+  AdminInventarioRoute: AdminInventarioRoute,
   AdminLocalesRoute: AdminLocalesRoute,
+  AdminNominaRoute: AdminNominaRoute,
   AdminPagosRoute: AdminPagosRoute,
+  AdminPlantaRoute: AdminPlantaRoute,
+  AdminPosRoute: AdminPosRoute,
+  AdminProductosRoute: AdminProductosRoute,
+  AdminRecepcionRoute: AdminRecepcionRoute,
+  AdminRecetasRoute: AdminRecetasRoute,
+  AdminRutasRoute: AdminRutasRoute,
+  AdminVentasRoute: AdminVentasRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ContadorRouteChildren {
+  ContadorAuditoriaRoute: typeof ContadorAuditoriaRoute
+  ContadorClientesRoute: typeof ContadorClientesRoute
+  ContadorGastosRoute: typeof ContadorGastosRoute
+  ContadorNominaRoute: typeof ContadorNominaRoute
+  ContadorIndexRoute: typeof ContadorIndexRoute
+}
+
+const ContadorRouteChildren: ContadorRouteChildren = {
+  ContadorAuditoriaRoute: ContadorAuditoriaRoute,
+  ContadorClientesRoute: ContadorClientesRoute,
+  ContadorGastosRoute: ContadorGastosRoute,
+  ContadorNominaRoute: ContadorNominaRoute,
+  ContadorIndexRoute: ContadorIndexRoute,
+}
+
+const ContadorRouteWithChildren = ContadorRoute._addFileChildren(
+  ContadorRouteChildren,
+)
+
+interface GaleriaRouteChildren {
+  GaleriaCajaRoute: typeof GaleriaCajaRoute
+  GaleriaClientesRoute: typeof GaleriaClientesRoute
+  GaleriaVentasRoute: typeof GaleriaVentasRoute
+  GaleriaIndexRoute: typeof GaleriaIndexRoute
+}
+
+const GaleriaRouteChildren: GaleriaRouteChildren = {
+  GaleriaCajaRoute: GaleriaCajaRoute,
+  GaleriaClientesRoute: GaleriaClientesRoute,
+  GaleriaVentasRoute: GaleriaVentasRoute,
+  GaleriaIndexRoute: GaleriaIndexRoute,
+}
+
+const GaleriaRouteWithChildren =
+  GaleriaRoute._addFileChildren(GaleriaRouteChildren)
 
 interface InquilinoRouteChildren {
   InquilinoDisponiblesRoute: typeof InquilinoDisponiblesRoute
@@ -298,10 +1161,73 @@ const InquilinoRouteWithChildren = InquilinoRoute._addFileChildren(
   InquilinoRouteChildren,
 )
 
+interface PlantaRouteChildren {
+  PlantaRecetasRoute: typeof PlantaRecetasRoute
+  PlantaIndexRoute: typeof PlantaIndexRoute
+}
+
+const PlantaRouteChildren: PlantaRouteChildren = {
+  PlantaRecetasRoute: PlantaRecetasRoute,
+  PlantaIndexRoute: PlantaIndexRoute,
+}
+
+const PlantaRouteWithChildren =
+  PlantaRoute._addFileChildren(PlantaRouteChildren)
+
+interface RecepcionRouteChildren {
+  RecepcionInventarioRoute: typeof RecepcionInventarioRoute
+  RecepcionIndexRoute: typeof RecepcionIndexRoute
+}
+
+const RecepcionRouteChildren: RecepcionRouteChildren = {
+  RecepcionInventarioRoute: RecepcionInventarioRoute,
+  RecepcionIndexRoute: RecepcionIndexRoute,
+}
+
+const RecepcionRouteWithChildren = RecepcionRoute._addFileChildren(
+  RecepcionRouteChildren,
+)
+
+interface RutaRouteChildren {
+  RutaClientesRoute: typeof RutaClientesRoute
+  RutaVenderRoute: typeof RutaVenderRoute
+  RutaVentasRoute: typeof RutaVentasRoute
+  RutaIndexRoute: typeof RutaIndexRoute
+}
+
+const RutaRouteChildren: RutaRouteChildren = {
+  RutaClientesRoute: RutaClientesRoute,
+  RutaVenderRoute: RutaVenderRoute,
+  RutaVentasRoute: RutaVentasRoute,
+  RutaIndexRoute: RutaIndexRoute,
+}
+
+const RutaRouteWithChildren = RutaRoute._addFileChildren(RutaRouteChildren)
+
+interface SuperadminRouteChildren {
+  SuperadminAuditoriaRoute: typeof SuperadminAuditoriaRoute
+  SuperadminIndexRoute: typeof SuperadminIndexRoute
+}
+
+const SuperadminRouteChildren: SuperadminRouteChildren = {
+  SuperadminAuditoriaRoute: SuperadminAuditoriaRoute,
+  SuperadminIndexRoute: SuperadminIndexRoute,
+}
+
+const SuperadminRouteWithChildren = SuperadminRoute._addFileChildren(
+  SuperadminRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  ContadorRoute: ContadorRouteWithChildren,
+  GaleriaRoute: GaleriaRouteWithChildren,
   InquilinoRoute: InquilinoRouteWithChildren,
+  PlantaRoute: PlantaRouteWithChildren,
+  RecepcionRoute: RecepcionRouteWithChildren,
+  RutaRoute: RutaRouteWithChildren,
+  SuperadminRoute: SuperadminRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
