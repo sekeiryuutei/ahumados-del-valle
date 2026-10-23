@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -11,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { ErrorBox, Loading, PageHeader, Panel } from "@/components/app/ui-bits";
 import { Pill } from "@/components/app/status";
 
-export const Route = createFileRoute("/admin/ajustes")({ component: SettingsPage });
+export const Route = createFileRoute("/admin/ajustes")({ head: () => pageHead("Recargo de pagos"), component: SettingsPage });
 
 function SettingsPage() {
   const current = useQuery(q.surcharge());
@@ -44,7 +45,7 @@ function SettingsPage() {
           <h2 className="text-lg font-bold">Recargo por pago en línea (Wompi)</h2>
           <p className="mt-1 text-sm text-muted-foreground">Se suma al canon cuando el inquilino paga en línea. Se muestra en una línea aparte antes de confirmar.</p>
           {current.isLoading ? <Loading /> : current.error ? <ErrorBox message={errorMessage(current.error)} /> : (
-            <p className="mt-4 font-display text-4xl font-bold text-primary tabular">{formatCOP(current.data!.amount)}</p>
+            <p className="mt-4 font-display text-4xl font-bold text-primary tabular">{formatCOP((current.data?.amount ?? 0))}</p>
           )}
           <div className="mt-6 space-y-3">
             <div className="space-y-1.5">

@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle2, CreditCard, FileText } from "lucide-react";
@@ -8,14 +9,15 @@ import { errorMessage } from "@/services";
 import { Button } from "@/components/ui/button";
 import { ErrorBox, Loading, Panel } from "@/components/app/ui-bits";
 
-export const Route = createFileRoute("/inquilino/")({ component: TenantHome });
+export const Route = createFileRoute("/inquilino/")({ head: () => pageHead("Mi arriendo"), component: TenantHome });
 
 function TenantHome() {
   const session = useSession();
   const acc = useQuery({ ...q.account(session?.user.tenantId ?? ""), enabled: !!session?.user.tenantId });
   if (acc.isLoading) return <Loading />;
   if (acc.error) return <ErrorBox message={errorMessage(acc.error)} onRetry={() => acc.refetch()} />;
-  const a = acc.data!;
+  const a = acc.data;
+  if (!a) return <Loading />;
   const next = a.pending[0];
   const firstName = a.tenant.name.split(" ")[0];
 

@@ -111,7 +111,13 @@ function saleAccess(locationId: LocationId) {
     "Esta caja no está asignada a tu cargo.",
   );
 }
-async function createSale(input: SalesInput, paused: boolean): Promise<Sale> {
+let saleLock: Promise<unknown> = Promise.resolve();
+function createSale(input: SalesInput, paused: boolean): Promise<Sale> {
+  const next = saleLock.then(() => commitSale(input, paused));
+  saleLock = next.catch(() => undefined);
+  return next;
+}
+async function commitSale(input: SalesInput, paused: boolean): Promise<Sale> {
   saleAccess(input.locationId);
   const d = businessDb();
   const customer = d.customers.find((c) => c.id === input.customerId);
@@ -166,11 +172,11 @@ async function createSale(input: SalesInput, paused: boolean): Promise<Sale> {
     "Las canastillas deben ser un número entero positivo.",
   );
   const id = input.draftId ?? uid("sale");
-  const next =
-    d.sales.filter((s) => s.locationId === input.locationId).length + setting("receipt-start", 1);
+  const next = Math.max(setting("receipt-start", 1) - 1, ...d.sales.filter(s => s.locationId === input.locationId).map(s => Number(s.number.split("-").at(-1)) || 0)) + 1;
+  const draft = d.sales.find(s => s.id === input.draftId);
   const sale: Sale = {
     id,
-    number: `#${input.locationId === "galeria" ? "GAL" : input.locationId === "ruta-1" ? "RUT" : "AHU"}-${next}`,
+    number: draft?.number ?? `#${input.locationId === "galeria" ? "GAL" : input.locationId === "ruta-1" ? "RUT" : "AHU"}-${next}`,
     locationId: input.locationId,
     customerId: customer.id,
     items,
@@ -283,7 +289,7 @@ export const businessServices: BusinessServices = {
         refId: id,
         name: input.name,
       };
-      businessDb().employees.push({ ...input, id, username: key, active: true });
+      businessDb().employees.push({ name: input.name, role: input.role, hourlyRate: input.hourlyRate, id, username: key, active: true });
       save();
       audit("Usuarios", "Empleado creado", id);
       commit();
@@ -293,6 +299,9 @@ export const businessServices: BusinessServices = {
       const row = businessDb().employees.find((e) => e.id === id);
       check(row && row.role !== "admin", "No puedes desactivar la administración.");
       row.active = active;
+      const credential = db().credentials[row.username];
+      if (credential) credential.active = active;
+      save();
       audit("Usuarios", active ? "Activado" : "Desactivado", id);
       commit();
     },

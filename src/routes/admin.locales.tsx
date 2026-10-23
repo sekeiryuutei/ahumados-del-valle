@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -15,7 +16,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Empty, ErrorBox, Loading, PageHeader, Panel } from "@/components/app/ui-bits";
 import { PropertyBadge } from "@/components/app/status";
 
-export const Route = createFileRoute("/admin/locales")({ component: PropertiesPage });
+export const Route = createFileRoute("/admin/locales")({ head: () => pageHead("Locales y bodegas"), component: PropertiesPage });
 
 function PropertiesPage() {
   const list = useQuery(q.properties());
@@ -24,11 +25,11 @@ function PropertiesPage() {
   return (
     <>
       <PageHeader title="Locales y bodegas" subtitle="Los disponibles los ven tus inquilinos." action={<Button size="touch" onClick={() => setEditing("new")}><Plus /> Nuevo local</Button>} />
-      {list.isLoading ? <Loading /> : list.error ? <ErrorBox message={errorMessage(list.error)} onRetry={() => list.refetch()} /> : list.data!.length === 0 ? (
+      {list.isLoading ? <Loading /> : list.error ? <ErrorBox message={errorMessage(list.error)} onRetry={() => list.refetch()} /> : (list.data ?? []).length === 0 ? (
         <Empty title="Sin locales" action={<Button onClick={() => setEditing("new")}>Crear local</Button>} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {list.data!.map((p) => (
+          {(list.data ?? []).map((p) => (
             <Panel key={p.id} className="flex flex-col">
               <div className="flex items-start justify-between gap-2">
                 <div>

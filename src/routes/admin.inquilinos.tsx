@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
@@ -18,6 +19,7 @@ import { Empty, ErrorBox, Loading, PageHeader, Panel } from "@/components/app/ui
 import { Pill } from "@/components/app/status";
 
 export const Route = createFileRoute("/admin/inquilinos")({
+  head: () => pageHead("Inquilinos y contratos"),
   validateSearch: z.object({ nuevo: z.boolean().optional() }),
   component: TenantsPage,
 });
@@ -56,11 +58,11 @@ function TenantsPage() {
         subtitle="Registra inquilinos y entrégales su usuario y clave."
         action={<Button size="touch" onClick={() => setNew(true)}><UserPlus /> Nuevo inquilino</Button>}
       />
-      {tenants.isLoading ? <Loading /> : tenants.error ? <ErrorBox message={errorMessage(tenants.error)} onRetry={() => tenants.refetch()} /> : tenants.data!.length === 0 ? (
+      {tenants.isLoading ? <Loading /> : tenants.error ? <ErrorBox message={errorMessage(tenants.error)} onRetry={() => tenants.refetch()} /> : (tenants.data ?? []).length === 0 ? (
         <Empty title="Aún no hay inquilinos" action={<Button onClick={() => setNew(true)}>Registrar el primero</Button>} />
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
-          {tenants.data!.map((a) => (
+          {(tenants.data ?? []).map((a) => (
             <Panel key={a.tenant.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">

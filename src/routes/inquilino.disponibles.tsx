@@ -1,3 +1,4 @@
+import { pageHead } from '@/lib/page-head';
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { q } from "@/hooks/use-data";
@@ -6,18 +7,18 @@ import { errorMessage } from "@/services";
 import { Empty, ErrorBox, Loading, PageHeader, Panel } from "@/components/app/ui-bits";
 import { PropertyBadge } from "@/components/app/status";
 
-export const Route = createFileRoute("/inquilino/disponibles")({ component: Available });
+export const Route = createFileRoute("/inquilino/disponibles")({ head: () => pageHead("Locales disponibles"), component: Available });
 
 function Available() {
   const list = useQuery(q.properties("disponible"));
   return (
     <>
       <PageHeader title="Locales disponibles" subtitle="¿Te interesa alguno? Pregunta a la administración." />
-      {list.isLoading ? <Loading /> : list.error ? <ErrorBox message={errorMessage(list.error)} onRetry={() => list.refetch()} /> : list.data!.length === 0 ? (
+      {list.isLoading ? <Loading /> : list.error ? <ErrorBox message={errorMessage(list.error)} onRetry={() => list.refetch()} /> : (list.data ?? []).length === 0 ? (
         <Empty title="No hay locales disponibles" text="Vuelve a revisar más adelante." />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {list.data!.map((p) => (
+          {(list.data ?? []).map((p) => (
             <Panel key={p.id}>
               <div className="flex items-start justify-between gap-2">
                 <div>
