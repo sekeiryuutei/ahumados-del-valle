@@ -148,6 +148,14 @@ export function InventoryPage() {
   const [to, setTo] = useState("galeria");
   const [qty, setQty] = useState(1000);
   const [reason, setReason] = useState("");
+  const [lotFilter, setLotFilter] = useState("");
+  const [supplierFilter, setSupplierFilter] = useState("");
+  const [stageFilter, setStageFilter] = useState("");
+  const [expiryFilter, setExpiryFilter] = useState("");
+  const today = todayBogota();
+  const alertDate = new Date(`${today}T12:00:00-05:00`);
+  alertDate.setUTCDate(alertDate.getUTCDate() + Number(d.settings.find(s => s.id === "stock-alert")?.value || 7));
+  const soon = alertDate.toISOString().slice(0, 10);
   return (
     <>
       <PageHeader
@@ -211,6 +219,16 @@ export function InventoryPage() {
             );
           })}
       </Table>
+      <h2 className="mb-3 mt-8 text-xl font-bold">Lotes y vencimientos</h2>
+      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Input aria-label="Buscar lote" placeholder="Código de lote" value={lotFilter} onChange={e => setLotFilter(e.target.value)} />
+        <SelectField label="Proveedor de lote" value={supplierFilter} onChange={setSupplierFilter} options={d.suppliers} />
+        <SelectField label="Estado de lote" value={stageFilter} onChange={setStageFilter} options={["crudo", "marinado", "ahumado", "congelado"].map(s => ({ id: s, name: s }))} />
+        <SelectField label="Vencimiento de lote" value={expiryFilter} onChange={setExpiryFilter} options={[{ id: "vencido", name: "Vencidos" }, { id: "proximo", name: "Próximos a vencer" }, { id: "vigente", name: "Vigentes" }]} />
+      </div>
+      <Table heads={["Lote", "Producto / proveedor", "Estado", "Neto", "Vencimiento"]}>
+        {d.lots.filter(l => (!location || l.locationId === location) && l.id.includes(lotFilter) && (!supplierFilter || l.supplierId === supplierFilter) && (!stageFilter || l.stage === stageFilter) && (d.products.find(p => p.id === l.productId)?.name.toLowerCase().includes(search.toLowerCase())) && (!expiryFilter || (expiryFilter === "vencido" ? l.expiresAt < today : expiryFilter === "proximo" ? l.expiresAt >= today && l.expiresAt <= soon : l.expiresAt > soon))).map(l => <tr key={l.id}><td className={cell}>{l.id}</td><td className={cell}>{d.products.find(p => p.id === l.productId)?.name}<p className="text-xs">{d.suppliers.find(s => s.id === l.supplierId)?.name}</p></td><td className={cell}>{l.stage}</td><td className={cell}>{l.units ? `${l.units} und` : formatKg(l.grams)}</td><td className={cell}><Status warning={l.expiresAt <= soon}>{l.expiresAt < today ? "Vencido" : l.expiresAt <= soon ? "Próximo a vencer" : "Vigente"}</Status><p className="text-xs">{l.expiresAt}</p></td></tr>)}
+      </Table>
       <h2 className="mb-3 mt-8 text-xl font-bold">Trazabilidad</h2>
       <Table
         heads={["Movimiento", "Producto", "Cantidad", "Origen → destino", "Responsable / motivo"]}
@@ -225,7 +243,7 @@ export function InventoryPage() {
                 <p className="text-xs text-muted-foreground">{m.reference}</p>
               </td>
               <td className={cell}>{d.products.find((p) => p.id === m.productId)?.name}</td>
-              <td className={cell}>{m.quantity} g/und</td>
+              <td className={cell}>{d.products.find(p => p.id === m.productId)?.control === "unidad" ? `${m.quantity} und` : formatKg(m.quantity)}</td>
               <td className={cell}>
                 {m.from ?? "Entrada"} → {m.to ?? "Salida"}
               </td>
@@ -291,6 +309,7 @@ export function InventoryPage() {
 }
 export function ProductionPage() {
   const d = useBusiness();
+  const session = useSession();
   const { run, busy } = useAction();
   const [lot, setLot] = useState<Lot | null>(null);
   const [grams, setGrams] = useState(0);
@@ -373,7 +392,7 @@ export function ProductionPage() {
             label="Etapa"
             value={stage}
             onChange={setStage}
-            options={stages.map((s) => ({ id: s, name: s }))}
+            options={stages.filter((s, i) => session?.user.role === "admin" ? i > stages.indexOf(lot?.stage ?? "crudo") : i === stages.indexOf(lot?.stage ?? "crudo") + 1).map((s) => ({ id: s, name: s }))}
           />
           <NumberField label="Peso final · gramos" value={grams} onChange={setGrams} />
           <p>Variación: {shrinkage(lot?.initialGrams ?? 0, grams).toFixed(1)}%</p>

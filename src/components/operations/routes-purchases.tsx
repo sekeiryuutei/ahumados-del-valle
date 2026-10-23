@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Truck, RefreshCw, Plus, Send, Check } from "lucide-react";
 import { services } from "@/services";
 import { useSession } from "@/hooks/use-session";
+import { netWeight, reconcileRoute } from "@/domain/operation-rules";
+import type { DispatchLine } from "@/domain/operations";
 import { formatCOP, formatKg, todayBogota } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,16 +29,23 @@ export function RoutesPage() {
   const [dispatchOpen, setDispatchOpen] = useState(false);
   const [product, setProduct] = useState("prod-19");
   const [quantity, setQuantity] = useState(10000);
+  const [gross, setGross] = useState(14000);
+  const [boxes, setBoxes] = useState(2);
   const [date, setDate] = useState(todayBogota());
   const [employee, setEmployee] = useState("Empleado de ruta");
   const [signed, setSigned] = useState(false);
-  const [lines, setLines] = useState<{ productId: string; loaded: number; returned: number }[]>([]);
+  const [lines, setLines] = useState<DispatchLine[]>([]);
   const [settle, setSettle] = useState("");
   const [returns, setReturns] = useState<Record<string, number>>({});
   const [cash, setCash] = useState(0);
   const [reason, setReason] = useState("");
   const queue = useQuery({ queryKey: ["route-queue"], queryFn: () => services.routes.queue() });
   const active = d.dispatches.find((x) => x.id === settle);
+  const selectedProduct = d.products.find(p => p.id === product);
+  const tare = Number(d.settings.find(s => s.id === "tare")?.value || 0);
+  const net = selectedProduct?.control === "unidad" ? quantity : netWeight(gross, tare, boxes);
+  const preview = active ? reconcileRoute(active, d.sales, d.products, Object.entries(returns).map(([productId, quantity]) => ({ productId, quantity }))) : null;
+  const quantityLabel = (id: string, value: number) => d.products.find(p => p.id === id)?.control === "unidad" ? `${value} und` : formatKg(value);
   return (
     <>
       <PageHeader
@@ -148,25 +157,28 @@ export function RoutesPage() {
               value={formatCOP(s.difference)}
               tone={s.difference < 0 ? "warning" : "success"}
             />
-            <Stat label="Participación del empleado" value={formatCOP(s.employeeSurplus)} />
+            {session?.user.role === "admin" && <Stat label="Participación del empleado" value={formatCOP(s.employeeSurplus)} />}
           </div>
-          <h3 className="my-4 font-bold">Inventario y descongelamiento</h3>
+          <h3 className="my-4 font-bold">1. Inventario físico</h3>
           <Table
             heads={["Producto", "Carga", "Vendido", "Devuelto físico", "Diferencia", "Estado"]}
           >
             {s.inventory.map((i) => (
               <tr key={i.productId}>
                 <td className={cell}>{d.products.find((p) => p.id === i.productId)?.name}</td>
-                <td className={cell}>{i.loaded}</td>
-                <td className={cell}>{i.sold}</td>
-                <td className={cell}>{i.returned}</td>
-                <td className={cell}>{i.difference}</td>
+                <td className={cell}>{quantityLabel(i.productId, i.loaded)}</td>
+                <td className={cell}>{quantityLabel(i.productId, i.sold)}</td>
+                <td className={cell}>{quantityLabel(i.productId, i.returned)}</td>
+                <td className={cell}>{quantityLabel(i.productId, i.difference)}</td>
                 <td className={cell}>
                   <Status warning={i.state === "Requiere revisión"}>{i.state}</Status>
                 </td>
               </tr>
             ))}
           </Table>
+          <h3 className="mt-4 font-bold">2. Dinero entregado: {formatCOP(s.difference)} de diferencia</h3>
+          <h3 className="mt-4 font-bold">3. Descongelamiento y revisión</h3>
+          {s.inventory.filter(i => i.difference !== 0).map(i => <p key={i.productId} className="py-2 text-sm">{d.products.find(p => p.id === i.productId)?.name}: {quantityLabel(i.productId, i.difference)} · {i.state}</p>)}
           <p className="mt-2 text-xs text-muted-foreground">
             Diferencias físicas en gramos/unidades · Las pérdidas normales no generan cobro
             automático.
@@ -213,20 +225,19 @@ export function RoutesPage() {
             onChange={setProduct}
             options={d.products}
           />
-          <NumberField label="Carga neta · g/und" value={quantity} onChange={setQuantity} />
+          {selectedProduct?.control === "unidad" ? <NumberField label="Unidades de carga" value={quantity} onChange={setQuantity} /> : <><NumberField label="Peso bruto de carga · g" value={gross} onChange={setGross} /><NumberField label="Cajas de carga" value={boxes} onChange={setBoxes} /><p className="border-y py-3">Tara: {formatKg(tare)} por caja · <strong>Neto: {formatKg(net)}</strong></p></>}
           <Button
             type="button"
             variant="outline"
-            onClick={() =>
-              setLines([...lines, { productId: product, loaded: quantity, returned: 0 }])
-            }
+            disabled={net <= 0 || lines.some(l => l.productId === product)}
+            onClick={() => setLines([...lines, { productId: product, loaded: net, returned: 0, ...(selectedProduct?.control === "unidad" ? {} : { grossGrams: gross, tareGrams: tare, boxes }) }])}
           >
             <Plus />
             Agregar carga
           </Button>
           {lines.map((l, i) => (
             <div className="flex justify-between text-sm" key={i}>
-              {d.products.find((p) => p.id === l.productId)?.name} · {l.loaded}
+              {d.products.find((p) => p.id === l.productId)?.name} · {quantityLabel(l.productId, l.loaded)}
               <Button
                 type="button"
                 variant="ghost"
@@ -264,6 +275,8 @@ export function RoutesPage() {
             if (ok) setSettle("");
           }}
         >
+          <h3 className="font-bold">1. Inventario: carga − ventas − devolución</h3>
+          {preview?.inventory.map(i => <div key={i.productId} className="border-b py-2 text-sm"><strong>{d.products.find(p => p.id === i.productId)?.name}</strong><p>{quantityLabel(i.productId, i.loaded)} − {quantityLabel(i.productId, i.sold)} − {quantityLabel(i.productId, i.returned)} = {quantityLabel(i.productId, i.difference)}</p></div>)}
           {active?.lines.map((l) => (
             <NumberField
               key={l.productId}
@@ -272,7 +285,14 @@ export function RoutesPage() {
               onChange={(v) => setReturns({ ...returns, [l.productId]: v })}
             />
           ))}
+          <h3 className="font-bold">2. Dinero: ventas por medio de pago</h3>
+          <p>Efectivo esperado: {formatCOP(preview?.expected ?? 0)}</p>
+          {(["nequi", "bancolombia", "tarjeta", "fiado"] as const).map(method => <p key={method} className="text-sm capitalize">{method}: {formatCOP(preview?.routeSales.flatMap(s => s.payments).filter(p => p.method === method).reduce((sum, p) => sum + p.amount, 0) ?? 0)}</p>)}
           <NumberField label="Efectivo entregado · COP" value={cash} onChange={setCash} />
+          <p>Diferencia de dinero: <strong>{formatCOP(cash - (preview?.expected ?? 0))}</strong></p>
+          <h3 className="font-bold">3. Descongelamiento y diferencias físicas</h3>
+          {preview?.inventory.map(i => <p key={i.productId} className="text-sm">{d.products.find(p => p.id === i.productId)?.name}: <Status warning={i.state === "Requiere revisión"}>{i.state}</Status></p>)}
+          <p className="text-xs text-muted-foreground">Tolerancia del producto aplicada. No se descuenta dinero automáticamente por pérdidas normales.</p>
           <Field label="Motivo de diferencias y responsable">
             <Input value={reason} onChange={(e) => setReason(e.target.value)} />
           </Field>

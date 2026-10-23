@@ -253,6 +253,7 @@ export const businessServices: BusinessServices = {
         out.seasonings = [];
         out.attendance = [];
         out.employees = [];
+        out.settlements = out.settlements.map(s => ({ ...s, employeeSurplus: 0 }));
         out.purchases = [];
         out.audit = out.audit.filter((a) => ["Rutas", "Ventas"].includes(a.module));
       }

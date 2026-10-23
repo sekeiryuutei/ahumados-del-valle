@@ -94,9 +94,11 @@ export const mockServices: RentalServices = {
 
   properties: {
     async list(filter) {
+      const role = readSession()?.user.role;
+      if (role !== "admin" && role !== "contador" && role !== "inquilino") throw new ServiceError("validacion", "Tu cargo no tiene acceso a los locales.");
       await delay();
       const tenant = readSession()?.user.role === "inquilino";
-      return db().properties.filter((p) => tenant ? p.status === "disponible" : !filter?.status || p.status === filter.status);
+      return structuredClone(db().properties.filter((p) => tenant ? p.status === "disponible" : !filter?.status || p.status === filter.status));
     },
     async create(input) {
       rentalAdmin();
