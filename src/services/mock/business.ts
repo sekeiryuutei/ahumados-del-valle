@@ -10,7 +10,7 @@ import type {
 import {
   itemTotal,
   netWeight,
-  reconciliationState,
+  reconcileRoute,
   shrinkage,
   validatePayments,
 } from "@/domain/operation-rules";
@@ -790,9 +790,10 @@ export const businessServices: BusinessServices = {
           !businessDb().dispatches.some((d) => d.status === "en_ruta"),
         "Confirma la aceptación y cierra la ruta activa antes de despachar.",
       );
+      check(new Set(input.lines.map(l => l.productId)).size === input.lines.length, "Cada producto debe aparecer una sola vez en la carga.");
       for (const line of input.lines)
         check(
-          positive(line.loaded) && balance(line.productId, "ahumadero").quantity >= line.loaded,
+          businessDb().products.some(p => p.id === line.productId && p.active) && positive(line.loaded) && balance(line.productId, "ahumadero").quantity >= line.loaded && (line.grossGrams === undefined || line.loaded === netWeight(line.grossGrams, line.tareGrams ?? 0, line.boxes ?? 0)),
           "Carga superior al inventario.",
         );
       const dispatch = { ...input, id: uid("dispatch"), status: "en_ruta" as const };
@@ -819,54 +820,13 @@ export const businessServices: BusinessServices = {
         dispatch && dispatch.status === "en_ruta" && Number.isInteger(delivered) && delivered >= 0,
         "Revisa ruta y dinero entregado.",
       );
-      const routeSales = d.sales.filter(
-        (s) =>
-          s.locationId === "ruta-1" &&
-          s.status === "pagada" &&
-          s.createdAt.slice(0, 10) >= dispatch.date,
-      );
+      check(returns.length === dispatch.lines.length && new Set(returns.map(r => r.productId)).size === returns.length && returns.every(r => dispatch.lines.some(l => l.productId === r.productId)), "Devuelve cada producto de la carga una sola vez, sin productos ajenos.");
+      const { inventory, expected, routeSales } = reconcileRoute(dispatch, d.sales, d.products, returns);
       check(
         !routeSales.some((s) => s.syncStatus === "pendiente"),
         "Sincroniza las ventas pendientes antes de liquidar.",
       );
-      const inventory = dispatch.lines.map((line) => {
-        const p = d.products.find((p) => p.id === line.productId);
-        const returned = returns.find((r) => r.productId === line.productId)?.quantity ?? 0;
-        const sold = routeSales
-          .flatMap((s) => s.items)
-          .filter((i) => i.productId === line.productId)
-          .reduce((s, i) => s + i.quantity, 0);
-        check(
-          Number.isInteger(returned) && returned >= 0 && returned <= line.loaded,
-          "Revisa devoluciones físicas.",
-        );
-        const difference = line.loaded - sold - returned;
-        return {
-          productId: line.productId,
-          loaded: line.loaded,
-          sold,
-          returned,
-          difference,
-          state: reconciliationState(difference, line.loaded, p?.thawTolerancePercent ?? 0),
-        };
-      });
-      // Equal-price-group differences that cancel out are substitutions, not losses.
-      for (const row of inventory) {
-        const p = d.products.find((p) => p.id === row.productId);
-        const peers = inventory.filter(
-          (r) => d.products.find((x) => x.id === r.productId)?.priceGroup === p?.priceGroup,
-        );
-        if (
-          row.difference !== 0 &&
-          peers.length > 1 &&
-          peers.reduce((s, r) => s + r.difference, 0) === 0
-        )
-          row.state = "Intercambio de producto";
-      }
-      const expected = routeSales
-        .flatMap((s) => s.payments)
-        .filter((p) => p.method === "efectivo")
-        .reduce((s, p) => s + p.amount, 0);
+      check(inventory.every(row => Number.isInteger(row.returned) && row.returned >= 0 && row.returned <= row.loaded), "Revisa devoluciones físicas.");
       const difference = delivered - expected;
       check(
         (difference === 0 && inventory.every((i) => i.state !== "Requiere revisión")) ||
@@ -874,12 +834,18 @@ export const businessServices: BusinessServices = {
         "Las diferencias requieren motivo y revisión; no generan cobro automático.",
       );
       for (const row of inventory) {
-        balance(row.productId, "ruta-1").quantity = 0;
+        const remaining = balance(row.productId, "ruta-1").quantity;
+        if (row.difference) {
+          const adjustment = row.returned - remaining;
+          balance(row.productId, "ruta-1").quantity = row.returned;
+          d.movements.unshift({ id: uid("mv"), productId: row.productId, quantity: Math.abs(adjustment), from: adjustment < 0 ? "ruta-1" : null, to: adjustment > 0 ? "ruta-1" : null, type: "ajuste", reference: dispatchId, reason: `${row.state}: ${reason || "Pérdida dentro de tolerancia"}`, actor: actor(), createdAt: now() });
+          audit("Rutas", row.state, dispatchId, reason, String(remaining), String(row.returned));
+        }
         if (row.returned)
           move(
             row.productId,
             row.returned,
-            null,
+            "ruta-1",
             "ahumadero",
             "devolucion",
             dispatchId,
@@ -968,7 +934,7 @@ export const businessServices: BusinessServices = {
     async authorize(employeeId, period, hours, reason) {
       allow("admin");
       check(
-        positive(hours) && reason.trim() && businessDb().employees.some((e) => e.id === employeeId),
+        Number.isFinite(hours) && hours > 0 && /^\d{4}-(0[1-9]|1[0-2])$/.test(period) && reason.trim() && businessDb().employees.some((e) => e.id === employeeId),
         "Revisa empleado, horas y motivo.",
       );
       businessDb().overtime.push({ id: uid("extra"), employeeId, period, hours, reason });

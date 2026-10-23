@@ -48,7 +48,7 @@ export interface Supplier { id: string; name: string; phone: string; productIds:
 export interface PurchaseOrder { id: string; supplierId: string; productId: string; quantity: number; received: number; status: "borrador" | "enviada" | "parcial" | "recibida"; createdAt: string }
 export interface Vehicle { id: string; name: string; active: boolean }
 export interface Route { id: string; name: string; vehicleId: string; employeeIds: string[] }
-export interface DispatchLine { productId: string; loaded: number; returned: number }
+export interface DispatchLine { productId: string; loaded: number; returned: number; grossGrams?: number; tareGrams?: number; boxes?: number }
 export interface Dispatch { id: string; name: string; employee: string; vehicle: string; date: string; status: "en_ruta" | "cerrada"; lines: DispatchLine[]; signed: boolean }
 export interface RouteReturn { productId: string; quantity: number }
 export interface RouteSettlement { id: string; dispatchId: string; expected: number; delivered: number; difference: number; inventory: { productId: string; loaded: number; sold: number; returned: number; difference: number; state: string }[]; employeeSurplus: number; createdAt: string }
