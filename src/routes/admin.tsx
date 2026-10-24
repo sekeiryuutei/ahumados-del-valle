@@ -40,6 +40,7 @@ const nav: NavItem[] = [
   { to: "/admin/inquilinos", label: "Inquilinos", icon: Users },
   { to: "/admin/locales", label: "Locales", icon: Building },
   { to: "/admin/pagos", label: "Pagos", icon: Receipt },
+  { to: "/admin/recordatorios", label: "Recordatorios", icon: Receipt },
   { to: "/admin/ajustes", label: "Ajustes", icon: Settings },
 ];
 

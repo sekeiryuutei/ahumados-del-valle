@@ -1,4 +1,5 @@
 import type { AttendanceRecord } from "./operations";
+import { isIsoDate } from "./dates";
 export function parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] } {
   const separator = text.split(/\r?\n/)[0]?.includes(";") ? ";" : ",";
   const cells: string[][] = [];
@@ -44,7 +45,7 @@ export function attendanceRows(parsed: ReturnType<typeof parseCsv>, employeeIds:
     const minutes = (v: string) => Number(v.slice(0, 2)) * 60 + Number(v.slice(3));
     if (
       !employeeIds.includes(row["employeeId"] ?? "") ||
-      !/^\d{4}-\d{2}-\d{2}$/.test(row["date"] ?? "") ||
+      !isIsoDate(row["date"] ?? "") ||
       !time(row["entry"]) ||
       !time(row["exit"])
     ) {
@@ -55,7 +56,7 @@ export function attendanceRows(parsed: ReturnType<typeof parseCsv>, employeeIds:
     const exit = row["exit"] ?? "";
     const hours = ((minutes(exit) - minutes(entry) + 1440) % 1440) / 60;
     const overtimeHours = Number(row["overtimeHours"] || 0);
-    if (!Number.isFinite(overtimeHours) || overtimeHours < 0 || overtimeHours > hours) {
+    if (hours <= 0 || !Number.isFinite(overtimeHours) || overtimeHours < 0 || overtimeHours > hours) {
       errors.push(`Fila ${i + 2}: extras superiores a horas trabajadas`);
       return;
     }

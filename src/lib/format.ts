@@ -1,3 +1,4 @@
+import { bogotaDate } from "@/domain/dates";
 const TZ = "America/Bogota";
 
 const cop = new Intl.NumberFormat("es-CO", {
@@ -46,7 +47,7 @@ export function formatPeriod(period: string): string {
 
 /** Fecha de hoy en Bogotá, YYYY-MM-DD */
 export function todayBogota(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(now);
+  return bogotaDate(now);
 }
 
 export function currentPeriod(now: Date = new Date()): string {

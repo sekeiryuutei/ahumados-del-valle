@@ -30,7 +30,7 @@ export function BusinessDashboard({ accounting = false }: { accounting?: boolean
   const sales = d.sales.filter(
     (s) =>
       s.status === "pagada" &&
-      s.createdAt.startsWith(date) &&
+      todayBogota(new Date(s.createdAt)) === date &&
       (!location || s.locationId === location),
   );
   const total = sales.reduce((sum, s) => sum + s.total, 0);

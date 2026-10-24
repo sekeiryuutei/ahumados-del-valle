@@ -44,6 +44,7 @@ function seed(): BusinessSnapshot {
     ["sunday-rate", "Laboral", "Recargo dominical/festivo", "", "%", "pendiente_validar"],
     ["transport", "Laboral", "Auxilio de transporte", "", "COP", "pendiente_validar"],
     ["smmlv", "Laboral", "SMMLV", "", "COP", "pendiente_validar"],
+    ["holidays", "Laboral", "Festivos (fechas ISO separadas por coma)", "", "", "pendiente_validar"],
     ["location-ahumadero", "Ubicaciones", "Nombre del ahumadero", "Ahumadero", "", "configurado"],
     ["location-galeria", "Ubicaciones", "Nombre de galería", "Galería", "", "configurado"],
     ["location-ruta-1", "Ubicaciones", "Nombre de ruta", "Ruta Valle", "", "configurado"],
@@ -62,7 +63,7 @@ function seed(): BusinessSnapshot {
     products, customers, settings, balances,
     locations: [{ id: "ahumadero", name: "Ahumadero", active: true }, { id: "galeria", name: "Galería", active: true }, { id: "ruta-1", name: "Ruta Valle", active: true }],
     sales: [sale, { ...sale, id: "s-demo-2", number: "#RUT-1", locationId: "ruta-1", customerId: "c2", items: [{ ...sale.items[0], productId: "prod-19", name: "Costilla al X mayor", quantity: 3000, control: "peso", price: 40000, total: 120000, note: "" }], payments: [{ method: "efectivo", amount: 60000 }, { method: "nequi", amount: 60000 }], total: 120000 }],
-    movements: [{ id: "mv-seed-1", productId: "prod-19", quantity: 10000, from: "ahumadero", to: "ruta-1", type: "despacho", reference: "dispatch-demo", actor: "Administrador", createdAt: now, reason: "Carga de ejemplo" }, { id: "mv-seed-2", productId: "prod-19", quantity: 3000, from: "ruta-1", to: null, type: "venta", reference: "s-demo-2", actor: "Empleado de ruta", createdAt: now, reason: "Venta de ejemplo" }],
+    movements: [{ id: "mv-seed-1", productId: "prod-19", quantity: 10000, from: "ahumadero", to: "ruta-1", type: "despacho", reference: "dispatch-demo", actor: "Administrador", createdAt: now, reason: "Carga de ejemplo" }, { id: "mv-seed-2", productId: "prod-19", quantity: 3000, from: "ruta-1", to: null, type: "venta", reference: "s-demo-2", actor: "Empleado de ruta", createdAt: now, reason: "Venta de ejemplo" }, { id: "mv-seed-3", productId: "prod-21", quantity: 10000, from: "ahumadero", to: "ruta-1", type: "despacho", reference: "dispatch-demo", actor: "Administrador", createdAt: now, reason: "Carga de ejemplo" }],
     lots: [{ id: "lot-demo-1", productId: "prod-20", supplierId: "sup1", locationId: "ahumadero", stage: "crudo", initialGrams: 20000, grams: 20000, units: 0, cost: 240000, expiresAt: `${Number(date.slice(0, 4)) + 1}${date.slice(4)}`, createdAt: now, history: [{ stage: "crudo", grams: 20000, date: now, actor: "Recepción" }] }, { id: "lot-demo-2", productId: "prod-20", supplierId: "sup1", locationId: "ahumadero", stage: "ahumado", initialGrams: 20000, grams: 14000, units: 0, cost: 240000, expiresAt: date, createdAt: now, history: [{ stage: "crudo", grams: 20000, date: now, actor: "Recepción" }, { stage: "marinado", grams: 21000, date: now, actor: "Planta" }, { stage: "ahumado", grams: 14000, date: now, actor: "Planta" }] }],
     seasonings: [{ id: "cond1", alias: "Mezcla verde A", stockGrams: 8000, minimumGrams: 1000 }, { id: "cond2", alias: "Mezcla roja B", stockGrams: 3000, minimumGrams: 500 }, { id: "cond3", alias: "Mezcla ámbar C", stockGrams: 500, minimumGrams: 600 }],
     recipes: [{ id: "rec1", productId: "prod-20", lines: [{ seasoningId: "cond1", gramsPerKg: 15 }, { seasoningId: "cond2", gramsPerKg: 8 }] }],
@@ -90,6 +91,17 @@ export function businessDb(): BusinessSnapshot {
   if (typeof window === "undefined") return seed();
   try { cache = JSON.parse(window.localStorage.getItem(KEY) ?? "null") as BusinessSnapshot | null ?? seed(); }
   catch { cache = seed(); }
+  const defaults = seed().settings;
+  for (const value of defaults) if (!cache.settings.some(s => s.id === value.id)) cache.settings.push(value);
+  const today = todayBogota();
+  for (const s of cache.settings) {
+    const due = cache.versions.filter(v => v.settingId === s.id && v.effectiveFrom <= today).sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom))[0];
+    if (due && due.effectiveFrom > todayBogota(new Date(s.updatedAt))) {
+      s.value = due.after; s.updatedAt = `${due.effectiveFrom}T12:00:00-05:00`; s.updatedBy = due.actor; s.status = due.after ? "configurado" : "pendiente";
+      const location = cache.locations.find(l => `location-${l.id}` === s.id);
+      if (location) location.name = due.after;
+    }
+  }
   return cache;
 }
 export function saveBusiness() {

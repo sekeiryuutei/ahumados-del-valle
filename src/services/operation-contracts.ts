@@ -1,4 +1,5 @@
 import type { Role } from "@/domain/types";
+import type { ReminderCandidate } from "@/domain/reminders";
 import type { AttendanceRecord, BusinessSnapshot, Customer, Dispatch, HardwareDeviceConfig, IntegrationSummary, LocationId, Lot, OfflineOperation, Payment, Product, ProductionStage, PurchaseOrder, Sale, Seasoning, Supplier } from "@/domain/operations";
 
 export interface SalesInput { locationId: LocationId; customerId: string; items: { productId: string; quantity: number; note: string }[]; payments: Payment[]; baskets: number; note: string; requiresDian: boolean; offline: boolean; draftId?: string | undefined }
@@ -20,6 +21,7 @@ export interface IntegrationAdminService { list(): Promise<IntegrationSummary[]>
 export interface AuditService { list(technical?: boolean): Promise<BusinessSnapshot["audit"]> }
 export interface ImportService { record(name: string, target: string, valid: number, errors: number, rows?: Record<string, string>[]): Promise<void> }
 export interface BusinessServices {
+  reminders: { preview(): Promise<ReminderCandidate[]>; simulate(tenantId: string, channel: "correo" | "whatsapp"): Promise<void> };
   business: { snapshot(): Promise<BusinessSnapshot> };
   users: UserService; products: ProductService; customers: CustomerService; sales: SalesService;
   cashRegisters: CashRegisterService; inventory: InventoryService; production: ProductionService;

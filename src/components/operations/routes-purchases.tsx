@@ -129,13 +129,7 @@ export function RoutesPage() {
                       ]),
                     ),
                   );
-                  setCash(
-                    d.sales
-                      .filter((s) => s.locationId === "ruta-1" && s.status === "pagada")
-                      .flatMap((s) => s.payments)
-                      .filter((p) => p.method === "efectivo")
-                      .reduce((s, p) => s + p.amount, 0),
-                  );
+                  setCash(reconcileRoute(dispatch, d.sales, d.products, []).expected);
                 }}
               >
                 <Check />

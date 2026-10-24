@@ -20,6 +20,8 @@ import { businessDb, saveBusiness } from "./business-db";
 import { db, save, uid, delay } from "./db";
 import { listQueue, putQueue } from "./offline-db";
 import { todayBogota } from "@/lib/format";
+import { reminderService } from "./reminders";
+import { isIsoDate } from "@/domain/dates";
 
 const now = () => new Date().toISOString();
 function actor() {
@@ -227,6 +229,7 @@ async function commitSale(input: SalesInput, paused: boolean): Promise<Sale> {
 }
 
 export const businessServices: BusinessServices = {
+  reminders: reminderService,
   business: {
     async snapshot() {
       allow("admin", "contador", "recepcion", "vendedor", "ruta", "planta", "superadmin");
@@ -797,7 +800,7 @@ export const businessServices: BusinessServices = {
           businessDb().products.some(p => p.id === line.productId && p.active) && positive(line.loaded) && balance(line.productId, "ahumadero").quantity >= line.loaded && (line.grossGrams === undefined || line.loaded === netWeight(line.grossGrams, line.tareGrams ?? 0, line.boxes ?? 0)),
           "Carga superior al inventario.",
         );
-      const dispatch = { ...input, id: uid("dispatch"), status: "en_ruta" as const };
+      const dispatch = { ...input, dispatchedAt: now(), id: uid("dispatch"), status: "en_ruta" as const };
       input.lines.forEach((l) =>
         move(
           l.productId,
@@ -910,8 +913,11 @@ export const businessServices: BusinessServices = {
           records.every(
             (r) =>
               businessDb().employees.some((e) => e.id === r.employeeId) &&
-              r.hours >= 0 &&
-              r.hours <= 24,
+              isIsoDate(r.date) &&
+              /^([01]\d|2[0-3]):[0-5]\d$/.test(r.entry) &&
+              /^([01]\d|2[0-3]):[0-5]\d$/.test(r.exit) &&
+              r.hours > 0 && r.hours < 24 &&
+              Number.isFinite(r.overtimeHours) && r.overtimeHours >= 0 && r.overtimeHours <= r.hours,
           ),
         "Revisa empleados y horarios.",
       );
@@ -947,7 +953,7 @@ export const businessServices: BusinessServices = {
     async update(id, value, reason, effectiveFrom) {
       allow("admin");
       const s = businessDb().settings.find((s) => s.id === id);
-      check(s && reason.trim() && effectiveFrom, "Configuración y motivo obligatorios.");
+      check(s && reason.trim() && isIsoDate(effectiveFrom), "Configuración, fecha válida y motivo obligatorios.");
       if (
         s.unit === "COP" ||
         s.unit === "g" ||
@@ -959,6 +965,9 @@ export const businessServices: BusinessServices = {
           value === "" || (Number.isFinite(Number(value)) && Number(value) >= 0),
           "Usa un valor numérico no negativo.",
         );
+      if (["COP", "g", "días"].includes(s.unit)) check(value === "" || Number.isInteger(Number(value)), "Pesos, gramos y días deben ser enteros.");
+      if (s.unit === "%") check(value === "" || Number(value) <= 100, "El porcentaje no puede superar 100.");
+      if (s.unit === "hora") check(value === "" || /^([01]\d|2[0-3]):[0-5]\d$/.test(value), "Escribe la hora en formato HH:MM.");
       businessDb().versions.unshift({
         id: uid("v"),
         settingId: id,
