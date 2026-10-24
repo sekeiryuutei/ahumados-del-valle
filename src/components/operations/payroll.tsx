@@ -52,7 +52,7 @@ export function PayrollPage() {
         "Extras estimadas": amount(estimate.extraPay),
         "Recargo nocturno": amount(estimate.nightPay),
         "Dominical/festivo": amount(estimate.sundayPay),
-        "Total estimado": amount(estimate.total),
+        "Total estimado": estimate.pending > 0 ? "Pendiente de autorizar extras" : amount(estimate.total),
       };
     });
   return (
@@ -172,7 +172,7 @@ export function PayrollPage() {
       </Table>
       <h2 className="mb-3 mt-8 text-xl font-bold">Desglose por día · demostración</h2>
       <Table heads={["Empleado / día", "Horas", "Extras autorizadas / pendientes", "Nocturnas / dominicales", "Base", "Extras", "Nocturno", "Dominical/festivo", "Total estimado"]}>
-        {estimates.flatMap(({ employee, estimate }) => estimate.days.map(day => <tr key={`${employee.id}-${day.date}`}><td className={cell}>{employee.name}<p className="text-xs">{day.date}</p></td><td className={cell}>{day.hours}</td><td className={cell}>{day.authorized} / {day.pending}</td><td className={cell}>{day.nightHours ?? "Pendiente"} / {day.sundayHours}</td><td className={cell}>{amount(day.base)}</td><td className={cell}>{amount(day.extraPay)}</td><td className={cell}>{amount(day.nightPay)}</td><td className={cell}>{amount(day.sundayPay)}</td><td className={cell}>{amount(day.total)}</td></tr>))}
+        {estimates.flatMap(({ employee, estimate }) => estimate.days.map(day => <tr key={`${employee.id}-${day.date}`}><td className={cell}>{employee.name}<p className="text-xs">{day.date}</p></td><td className={cell}>{day.hours}</td><td className={cell}>{day.authorized} / {day.pending}</td><td className={cell}>{day.nightHours ?? "Pendiente"} / {day.sundayHours}</td><td className={cell}>{amount(day.base)}</td><td className={cell}>{amount(day.extraPay)}</td><td className={cell}>{amount(day.nightPay)}</td><td className={cell}>{amount(day.sundayPay)}</td><td className={cell}>{day.pending > 0 ? "Pendiente de autorizar extras" : amount(day.total)}</td></tr>))}
       </Table>
       <h2 className="mb-3 mt-8 text-xl font-bold">Parámetros aplicados</h2>
       <Table heads={["Parámetro", "Valor", "Validación"]}>

@@ -12,6 +12,9 @@ describe("preliquidación de demostración", () => {
   });
   it("aplica parámetros configurados y solo extras autorizadas", () => {
     const result = preliquidate(employee, records, [{ id: "o1", employeeId: "e1", period: "2026-10", hours: 0.5, reason: "Ejemplo" }], settings, "2026-10");
-    expect(result.authorized).toBe(0.5); expect(result.extraPay).toBe(5000); expect(result.nightPay).toBe(8400); expect(result.sundayPay).toBe(24000); expect(result.total).toBe(61400);
+    expect(result.authorized).toBe(0.5); expect(result.extraPay).toBe(5000); expect(result.nightPay).toBe(8400); expect(result.sundayPay).toBe(24000); expect(result.pending).toBe(0.5); expect(result.total).toBeNull();
+  });
+  it("solo totaliza jornadas sin horas pendientes de autorización", () => {
+    expect(preliquidate(employee, records, [{ id: "o1", employeeId: "e1", period: "2026-10", hours: 1, reason: "Ejemplo" }], settings, "2026-10").total).toBe(66400);
   });
 });

@@ -32,7 +32,7 @@ export function preliquidate(employee: Employee, records: AttendanceRecord[], au
     const extraPay = rates.extra === null ? null : Math.round(authorized * employee.hourlyRate * (1 + rates.extra / 100));
     const nightPay = !nightConfigured || rates.night === null ? null : Math.round(nightMinutes / 60 * employee.hourlyRate * rates.night / 100);
     const sundayPay = rates.sunday === null ? null : Math.round(sundayMinutes / 60 * employee.hourlyRate * rates.sunday / 100);
-    const total = employee.hourlyRate <= 0 || extraPay === null || nightPay === null || sundayPay === null ? null : base + extraPay + nightPay + sundayPay;
+    const total = employee.hourlyRate <= 0 || authorized < record.overtimeHours || extraPay === null || nightPay === null || sundayPay === null ? null : base + extraPay + nightPay + sundayPay;
     return { date: record.date, hours: record.hours, reported: record.overtimeHours, authorized, pending: record.overtimeHours - authorized, nightHours: nightConfigured ? nightMinutes / 60 : null, sundayHours: sundayMinutes / 60, base, extraPay, nightPay, sundayPay, total };
   });
   const sum = (key: "hours" | "reported" | "authorized" | "pending" | "base") => days.reduce((total, day) => total + day[key], 0);

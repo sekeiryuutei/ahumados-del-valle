@@ -235,7 +235,7 @@ export function AuditPage({ technical = false }: { technical?: boolean }) {
     (a) =>
       a.technical === technical &&
       (!module || a.module === module) &&
-      (!date || a.createdAt.startsWith(date)) &&
+      (!date || todayBogota(new Date(a.createdAt)) === date) &&
       `${a.actor} ${a.action} ${a.entityId} ${a.reason}`
         .toLowerCase()
         .includes(search.toLowerCase()),

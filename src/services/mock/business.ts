@@ -21,6 +21,7 @@ import { db, save, uid, delay } from "./db";
 import { listQueue, putQueue } from "./offline-db";
 import { todayBogota } from "@/lib/format";
 import { reminderService } from "./reminders";
+import { isIsoDate } from "@/domain/dates";
 
 const now = () => new Date().toISOString();
 function actor() {
@@ -912,8 +913,11 @@ export const businessServices: BusinessServices = {
           records.every(
             (r) =>
               businessDb().employees.some((e) => e.id === r.employeeId) &&
-              r.hours >= 0 &&
-              r.hours <= 24,
+              isIsoDate(r.date) &&
+              /^([01]\d|2[0-3]):[0-5]\d$/.test(r.entry) &&
+              /^([01]\d|2[0-3]):[0-5]\d$/.test(r.exit) &&
+              r.hours > 0 && r.hours < 24 &&
+              Number.isFinite(r.overtimeHours) && r.overtimeHours >= 0 && r.overtimeHours <= r.hours,
           ),
         "Revisa empleados y horarios.",
       );
@@ -949,7 +953,7 @@ export const businessServices: BusinessServices = {
     async update(id, value, reason, effectiveFrom) {
       allow("admin");
       const s = businessDb().settings.find((s) => s.id === id);
-      check(s && reason.trim() && effectiveFrom, "Configuración y motivo obligatorios.");
+      check(s && reason.trim() && isIsoDate(effectiveFrom), "Configuración, fecha válida y motivo obligatorios.");
       if (
         s.unit === "COP" ||
         s.unit === "g" ||
