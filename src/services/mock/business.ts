@@ -799,7 +799,7 @@ export const businessServices: BusinessServices = {
           businessDb().products.some(p => p.id === line.productId && p.active) && positive(line.loaded) && balance(line.productId, "ahumadero").quantity >= line.loaded && (line.grossGrams === undefined || line.loaded === netWeight(line.grossGrams, line.tareGrams ?? 0, line.boxes ?? 0)),
           "Carga superior al inventario.",
         );
-      const dispatch = { ...input, id: uid("dispatch"), status: "en_ruta" as const };
+      const dispatch = { ...input, dispatchedAt: now(), id: uid("dispatch"), status: "en_ruta" as const };
       input.lines.forEach((l) =>
         move(
           l.productId,
@@ -961,6 +961,9 @@ export const businessServices: BusinessServices = {
           value === "" || (Number.isFinite(Number(value)) && Number(value) >= 0),
           "Usa un valor numérico no negativo.",
         );
+      if (["COP", "g", "días"].includes(s.unit)) check(value === "" || Number.isInteger(Number(value)), "Pesos, gramos y días deben ser enteros.");
+      if (s.unit === "%") check(value === "" || Number(value) <= 100, "El porcentaje no puede superar 100.");
+      if (s.unit === "hora") check(value === "" || /^([01]\d|2[0-3]):[0-5]\d$/.test(value), "Escribe la hora en formato HH:MM.");
       businessDb().versions.unshift({
         id: uid("v"),
         settingId: id,

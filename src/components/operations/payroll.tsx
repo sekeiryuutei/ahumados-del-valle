@@ -22,6 +22,7 @@ import {
   downloadCsv,
 } from "./common";
 import { parseCsv, attendanceRows } from "@/domain/imports";
+import { preliquidate } from "@/domain/payroll";
 
 export function PayrollPage() {
   const d = useBusiness();
@@ -35,25 +36,23 @@ export function PayrollPage() {
   const [records, setRecords] = useState<Omit<AttendanceRecord, "id">[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
   const [filename, setFilename] = useState("");
+  const estimates = d.employees.filter(e => e.active && e.role !== "admin").map(e => ({ employee: e, estimate: preliquidate(e, d.attendance, d.overtime, d.settings, period) }));
+  const amount = (value: number | null) => value === null ? "Pendiente de configurar" : formatCOP(value);
   const rows = d.employees
     .filter((e) => e.active && e.role !== "admin")
     .map((e) => {
-      const att = d.attendance.filter((a) => a.employeeId === e.id && a.date.startsWith(period));
-      const total = att.reduce((s, a) => s + a.hours, 0);
-      const extra = att.reduce((s, a) => s + a.overtimeHours, 0);
-      const authorized = d.overtime
-        .filter((o) => o.employeeId === e.id && o.period === period)
-        .reduce((s, o) => s + o.hours, 0);
-      const rate = Number(d.settings.find((s) => s.id === "overtime-rate")?.value || 0);
-      const base = Math.round((total - extra) * e.hourlyRate);
-      const extraPay = Math.round(Math.min(extra, authorized) * e.hourlyRate * (1 + rate / 100));
+      const estimate = preliquidate(e, d.attendance, d.overtime, d.settings, period);
       return {
         Empleado: e.name,
-        Horas: total,
-        "Extras autorizadas": Math.min(extra, authorized),
-        Base: base,
-        "Extras estimadas": extraPay,
-        "Total estimado": base + extraPay,
+        Horas: estimate.hours,
+        "Extras reportadas": estimate.reported,
+        "Extras autorizadas": estimate.authorized,
+        "Extras pendientes": estimate.pending,
+        Base: amount(estimate.base),
+        "Extras estimadas": amount(estimate.extraPay),
+        "Recargo nocturno": amount(estimate.nightPay),
+        "Dominical/festivo": amount(estimate.sundayPay),
+        "Total estimado": amount(estimate.total),
       };
     });
   return (
@@ -165,11 +164,15 @@ export function PayrollPage() {
           <tr key={i}>
             {Object.values(r).map((v, j) => (
               <td className={cell} key={j}>
-                {j >= 3 ? formatCOP(Number(v)) : v}
+                {v}
               </td>
             ))}
           </tr>
         ))}
+      </Table>
+      <h2 className="mb-3 mt-8 text-xl font-bold">Desglose por día · demostración</h2>
+      <Table heads={["Empleado / día", "Horas", "Extras autorizadas / pendientes", "Nocturnas / dominicales", "Base", "Extras", "Nocturno", "Dominical/festivo", "Total estimado"]}>
+        {estimates.flatMap(({ employee, estimate }) => estimate.days.map(day => <tr key={`${employee.id}-${day.date}`}><td className={cell}>{employee.name}<p className="text-xs">{day.date}</p></td><td className={cell}>{day.hours}</td><td className={cell}>{day.authorized} / {day.pending}</td><td className={cell}>{day.nightHours ?? "Pendiente"} / {day.sundayHours}</td><td className={cell}>{amount(day.base)}</td><td className={cell}>{amount(day.extraPay)}</td><td className={cell}>{amount(day.nightPay)}</td><td className={cell}>{amount(day.sundayPay)}</td><td className={cell}>{amount(day.total)}</td></tr>))}
       </Table>
       <h2 className="mb-3 mt-8 text-xl font-bold">Parámetros aplicados</h2>
       <Table heads={["Parámetro", "Valor", "Validación"]}>
@@ -224,7 +227,7 @@ export function PayrollPage() {
           <Field label="Periodo">
             <Input type="month" value={period} onChange={(e) => setPeriod(e.target.value)} />
           </Field>
-          <NumberField label="Horas autorizadas" value={hours} onChange={setHours} />
+          <NumberField label="Horas autorizadas" value={hours} onChange={setHours} step={0.25} />
           <Field label="Motivo">
             <Input required value={reason} onChange={(e) => setReason(e.target.value)} />
           </Field>

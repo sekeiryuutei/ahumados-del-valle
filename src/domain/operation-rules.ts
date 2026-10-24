@@ -1,4 +1,5 @@
 import type { Dispatch, Payment, Product, RouteReturn, Sale } from "./operations";
+import { bogotaDate } from "./dates";
 
 export function itemTotal(product: Pick<Product, "control">, quantity: number, price: number): number {
   return Math.round(price * quantity / (product.control === "unidad" ? 1 : 1000));
@@ -24,7 +25,7 @@ export function reconciliationState(difference: number, loaded: number, toleranc
 
 /** One reconciliation for both the preview and the committed settlement. */
 export function reconcileRoute(dispatch: Dispatch, sales: Sale[], products: Product[], returns: RouteReturn[]) {
-  const routeSales = sales.filter(s => s.locationId === "ruta-1" && s.status === "pagada" && new Date(s.createdAt).toLocaleDateString("en-CA", { timeZone: "America/Bogota" }) >= dispatch.date);
+  const routeSales = sales.filter(s => s.locationId === "ruta-1" && s.status === "pagada" && bogotaDate(new Date(s.createdAt)) >= dispatch.date && (!dispatch.dispatchedAt || s.createdAt >= dispatch.dispatchedAt));
   const inventory = dispatch.lines.map(line => {
     const product = products.find(p => p.id === line.productId);
     const sold = routeSales.flatMap(s => s.items).filter(i => i.productId === line.productId).reduce((sum, i) => sum + i.quantity, 0);
