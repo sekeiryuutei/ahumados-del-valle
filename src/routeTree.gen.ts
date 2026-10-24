@@ -38,6 +38,7 @@ import { Route as AdminPosRouteImport } from './routes/admin.pos'
 import { Route as AdminProductosRouteImport } from './routes/admin.productos'
 import { Route as AdminRecepcionRouteImport } from './routes/admin.recepcion'
 import { Route as AdminRecetasRouteImport } from './routes/admin.recetas'
+import { Route as AdminRecordatoriosRouteImport } from './routes/admin.recordatorios'
 import { Route as AdminRutasRouteImport } from './routes/admin.rutas'
 import { Route as AdminVentasRouteImport } from './routes/admin.ventas'
 import { Route as ContadorIndexRouteImport } from './routes/contador.index'
@@ -209,6 +210,11 @@ const AdminRecetasRoute = AdminRecetasRouteImport.update({
   path: '/recetas',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRecordatoriosRoute = AdminRecordatoriosRouteImport.update({
+  id: '/recordatorios',
+  path: '/recordatorios',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRutasRoute = AdminRutasRouteImport.update({
   id: '/rutas',
   path: '/rutas',
@@ -364,6 +370,7 @@ export interface FileRoutesByFullPath {
   '/admin/productos': typeof AdminProductosRoute
   '/admin/recepcion': typeof AdminRecepcionRoute
   '/admin/recetas': typeof AdminRecetasRoute
+  '/admin/recordatorios': typeof AdminRecordatoriosRoute
   '/admin/rutas': typeof AdminRutasRoute
   '/admin/ventas': typeof AdminVentasRoute
   '/contador/auditoria': typeof ContadorAuditoriaRoute
@@ -412,6 +419,7 @@ export interface FileRoutesByTo {
   '/admin/productos': typeof AdminProductosRoute
   '/admin/recepcion': typeof AdminRecepcionRoute
   '/admin/recetas': typeof AdminRecetasRoute
+  '/admin/recordatorios': typeof AdminRecordatoriosRoute
   '/admin/rutas': typeof AdminRutasRoute
   '/admin/ventas': typeof AdminVentasRoute
   '/contador/auditoria': typeof ContadorAuditoriaRoute
@@ -469,6 +477,7 @@ export interface FileRoutesById {
   '/admin/productos': typeof AdminProductosRoute
   '/admin/recepcion': typeof AdminRecepcionRoute
   '/admin/recetas': typeof AdminRecetasRoute
+  '/admin/recordatorios': typeof AdminRecordatoriosRoute
   '/admin/rutas': typeof AdminRutasRoute
   '/admin/ventas': typeof AdminVentasRoute
   '/contador/auditoria': typeof ContadorAuditoriaRoute
@@ -527,6 +536,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/recepcion'
     | '/admin/recetas'
+    | '/admin/recordatorios'
     | '/admin/rutas'
     | '/admin/ventas'
     | '/contador/auditoria'
@@ -575,6 +585,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/recepcion'
     | '/admin/recetas'
+    | '/admin/recordatorios'
     | '/admin/rutas'
     | '/admin/ventas'
     | '/contador/auditoria'
@@ -631,6 +642,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/recepcion'
     | '/admin/recetas'
+    | '/admin/recordatorios'
     | '/admin/rutas'
     | '/admin/ventas'
     | '/contador/auditoria'
@@ -876,6 +888,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRecetasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/recordatorios': {
+      id: '/admin/recordatorios'
+      path: '/recordatorios'
+      fullPath: '/admin/recordatorios'
+      preLoaderRoute: typeof AdminRecordatoriosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/rutas': {
       id: '/admin/rutas'
       path: '/rutas'
@@ -1074,6 +1093,7 @@ interface AdminRouteChildren {
   AdminProductosRoute: typeof AdminProductosRoute
   AdminRecepcionRoute: typeof AdminRecepcionRoute
   AdminRecetasRoute: typeof AdminRecetasRoute
+  AdminRecordatoriosRoute: typeof AdminRecordatoriosRoute
   AdminRutasRoute: typeof AdminRutasRoute
   AdminVentasRoute: typeof AdminVentasRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1099,6 +1119,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProductosRoute: AdminProductosRoute,
   AdminRecepcionRoute: AdminRecepcionRoute,
   AdminRecetasRoute: AdminRecetasRoute,
+  AdminRecordatoriosRoute: AdminRecordatoriosRoute,
   AdminRutasRoute: AdminRutasRoute,
   AdminVentasRoute: AdminVentasRoute,
   AdminIndexRoute: AdminIndexRoute,
