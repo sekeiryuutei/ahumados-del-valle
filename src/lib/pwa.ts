@@ -1,7 +1,7 @@
 /** Preview must never retain an app-shell worker or stale deployment chunks. */
 export function shouldRegisterWorker(production: boolean, hostname: string, inFrame: boolean, search: string) {
   const preview = hostname.startsWith("id-preview--") || hostname.startsWith("preview--") || ["lovableproject.com", "lovableproject-dev.com", "beta.lovable.dev"].some(domain => hostname === domain || hostname.endsWith(`.${domain}`));
-  return production && !inFrame && !preview && !new URLSearchParams(search).has("sw") || production && !inFrame && !preview && new URLSearchParams(search).get("sw") !== "off";
+  return production && !inFrame && !preview && new URLSearchParams(search).get("sw") !== "off";
 }
 
 export async function initializePwa() {

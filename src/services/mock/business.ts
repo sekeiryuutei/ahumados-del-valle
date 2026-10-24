@@ -20,6 +20,7 @@ import { businessDb, saveBusiness } from "./business-db";
 import { db, save, uid, delay } from "./db";
 import { listQueue, putQueue } from "./offline-db";
 import { todayBogota } from "@/lib/format";
+import { reminderService } from "./reminders";
 
 const now = () => new Date().toISOString();
 function actor() {
@@ -227,6 +228,7 @@ async function commitSale(input: SalesInput, paused: boolean): Promise<Sale> {
 }
 
 export const businessServices: BusinessServices = {
+  reminders: reminderService,
   business: {
     async snapshot() {
       allow("admin", "contador", "recepcion", "vendedor", "ruta", "planta", "superadmin");
