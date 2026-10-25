@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Pencil, Settings, Download, Plus, ShieldCheck, FlaskConical, Ban } from "lucide-react";
+import { Pencil, Settings, Download, Plus, ShieldCheck, FlaskConical, Ban, Eye } from "lucide-react";
 import { services } from "@/services";
 import { formatDateTime, formatCOP, todayBogota } from "@/lib/format";
 import type {
   BusinessSetting,
+  AuditEvent,
   HardwareDeviceConfig,
   IntegrationSummary,
 } from "@/domain/operations";
@@ -228,6 +229,7 @@ export function SettingsPage() {
 }
 export function AuditPage({ technical = false }: { technical?: boolean }) {
   const d = useBusiness();
+  const [detail, setDetail] = useState<AuditEvent | null>(null);
   const [search, setSearch] = useState("");
   const [module, setModule] = useState("");
   const [date, setDate] = useState("");
@@ -270,7 +272,7 @@ export function AuditPage({ technical = false }: { technical?: boolean }) {
         </Field>
       </div>
       <Table
-        heads={["Fecha / responsable", "Módulo / entidad", "Acción / motivo", "Antes → después"]}
+        heads={["Fecha / responsable", "Módulo / entidad", "Acción / motivo", "Antes → después", "Detalle"]}
       >
         {rows.map((a) => (
           <tr key={a.id}>
@@ -289,10 +291,14 @@ export function AuditPage({ technical = false }: { technical?: boolean }) {
             <td className={`${cell} max-w-xs break-words text-xs`}>
               {a.before.slice(0, 200)} → {a.after.slice(0, 200)}
             </td>
+            <td className={cell}><Button variant="ghost" size="icon" title="Ver evento completo" aria-label={`Detalle ${a.action}`} onClick={() => setDetail(a)}><Eye /></Button></td>
           </tr>
         ))}
       </Table>
       {!rows.length && <Empty title="Sin eventos con estos filtros" />}
+      <FormModal title="Detalle de auditoría" open={!!detail} onClose={() => setDetail(null)}>
+        {detail && <div className="space-y-4 text-sm"><p className="font-semibold">{detail.action}</p><dl className="space-y-2"><div><dt className="text-muted-foreground">Responsable / fecha</dt><dd>{detail.actor} · {formatDateTime(detail.createdAt)}</dd></div><div><dt className="text-muted-foreground">Módulo / referencia</dt><dd className="break-all">{detail.module} · {detail.entityId}</dd></div><div><dt className="text-muted-foreground">Motivo</dt><dd className="whitespace-pre-wrap break-words">{detail.reason || "Sin motivo adicional"}</dd></div></dl><section className="border-t pt-3"><h3 className="font-semibold">Antes</h3><pre className="whitespace-pre-wrap break-all text-xs">{detail.before || "Sin valor anterior"}</pre></section><section className="border-t pt-3"><h3 className="font-semibold">Después</h3><pre className="whitespace-pre-wrap break-all text-xs">{detail.after || "Sin valor posterior"}</pre></section></div>}
+      </FormModal>
     </>
   );
 }
