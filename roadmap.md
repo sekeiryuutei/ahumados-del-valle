@@ -1,7 +1,7 @@
 # Ahumados del Valle — Roadmap
 
 ## Hecho (frontend, datos de demostración)
-- [x] Diseño base, app instalable en celular/computador
+- [x] Diseño móvil/tablet/escritorio, manifiesto e iconos para instalación
 - [x] Ingreso separado: administración e inquilinos (usuario y clave)
 - [x] Admin: resumen, inquilinos (crear con acceso + contrato), locales, pagos, ajustes de recargo
 - [x] Inquilino: contrato y saldo, pagar con Wompi (+ recargo $5.000), locales disponibles, historial
@@ -12,11 +12,12 @@
 - [x] Configuración versionada, auditoría, importaciones e integraciones ficticias
 
 ## Verificación final
-- [ ] Despacho pesado y liquidación de inventario, dinero y descongelamiento
-- [ ] Apertura instalada sin conexión y cola IndexedDB sin duplicados
-- [ ] Asistencia/preliquidación sin parámetros legales inventados; recordatorios simulados
-- [ ] Pruebas de todos los cargos, pagos, ventas, persistencia, móvil y modo oscuro
-- [ ] Documentación y cierre de los recorridos del documento
+- [x] Despacho pesado y liquidación de inventario, dinero y descongelamiento; intercambio y faltante auditado
+- [x] Venta sin red en pantalla abierta y cola IndexedDB sin duplicados; guard de PWA en previews
+- [x] Asistencia/preliquidación sin parámetros legales inventados; recordatorios simulados
+- [x] Pruebas de todos los cargos, pagos, ventas, persistencia, móvil/tablet/escritorio y modo oscuro
+- [x] README con perfiles, módulos, ejecución y sustitución del proveedor mock
+- [ ] Apertura en frío sin conexión desde app instalada: espera sitio publicado; worker deshabilitado en preview
 
 ## Fuera de esta fase
 - Backend compartido, autorización real, Wompi/DIAN reales, notificaciones y hardware físico: requieren una fase posterior autorizada.
