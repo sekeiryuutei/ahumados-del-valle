@@ -1,7 +1,7 @@
 {
   "name": "Ahumados del Valle",
   "short_name": "Ahumados",
-  "description": "Gestión de Ahumados del Valle: arriendos, pagos e inquilinos.",
+  "description": "Ahumados del Valle: ventas, inventario, planta, rutas, administración e inquilinos.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
