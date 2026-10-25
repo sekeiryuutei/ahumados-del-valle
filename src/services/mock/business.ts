@@ -237,6 +237,7 @@ export const businessServices: BusinessServices = {
       const out = structuredClone(businessDb());
       const role = mockServices.auth.getSession()?.user.role;
       if (role !== "admin") out.settings = out.settings.filter((s) => s.id !== "surplus");
+      if (role !== "admin") out.versions = out.versions.filter(v => v.settingId !== "surplus");
       if (role === "superadmin") {
         const empty = structuredClone(out);
         for (const key of Object.keys(empty) as (keyof BusinessSnapshot)[])
@@ -247,6 +248,20 @@ export const businessServices: BusinessServices = {
       }
       out.integrations = [];
       out.audit = out.audit.filter((a) => !a.technical);
+      if (["recepcion", "planta", "vendedor", "ruta"].includes(role ?? "")) {
+        out.attendance = []; out.overtime = []; out.labor = []; out.employees = [];
+        out.propertyExpenses = []; out.imports = []; out.hardware = [];
+        out.settings = out.settings.filter(s => !["Laboral", "Arriendos"].includes(s.category));
+        const ids = new Set(out.settings.map(s => s.id));
+        out.versions = out.versions.filter(v => ids.has(v.settingId));
+      }
+      if (role === "recepcion" || role === "planta") {
+        out.sales = []; out.customers = []; out.closings = []; out.dispatches = []; out.settlements = [];
+        out.balances = out.balances.filter(b => b.locationId === "ahumadero");
+        out.movements = out.movements.filter(m => m.from === "ahumadero" || m.to === "ahumadero");
+        out.audit = out.audit.filter(a => ["Producción", "Recetas", "Inventario"].includes(a.module));
+        if (role === "recepcion") { out.recipes = []; out.seasonings = []; }
+      }
       if (role === "ruta") {
         out.sales = out.sales.filter((s) => s.locationId === "ruta-1");
         out.balances = out.balances.filter((b) => b.locationId === "ruta-1");
@@ -830,7 +845,7 @@ export const businessServices: BusinessServices = {
         !routeSales.some((s) => s.syncStatus === "pendiente"),
         "Sincroniza las ventas pendientes antes de liquidar.",
       );
-      check(inventory.every(row => Number.isInteger(row.returned) && row.returned >= 0 && row.returned <= row.loaded), "Revisa devoluciones físicas.");
+      check(inventory.every(row => Number.isInteger(row.returned) && row.returned >= 0 && (row.returned <= row.loaded || row.state === "Intercambio de producto")), "Revisa devoluciones físicas.");
       const difference = delivered - expected;
       check(
         (difference === 0 && inventory.every((i) => i.state !== "Requiere revisión")) ||

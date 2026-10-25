@@ -13,6 +13,8 @@ export const Route = createFileRoute("/admin")({
         property: "og:description",
         content: "Panel del administrador: locales, inquilinos y pagos.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AdminLayout,
