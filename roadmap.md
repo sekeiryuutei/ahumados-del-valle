@@ -17,7 +17,7 @@
 - [x] Asistencia/preliquidación sin parámetros legales inventados; recordatorios simulados
 - [x] Pruebas de todos los cargos, pagos, ventas, persistencia, móvil/tablet/escritorio y modo oscuro
 - [x] README con perfiles, módulos, ejecución y sustitución del proveedor mock
-- [ ] Apertura en frío sin conexión desde app instalada: espera sitio publicado; worker deshabilitado en preview
+- [x] Apertura sin conexión en el sitio publicado: worker activo y recarga sin red muestra el selector de portales (probado en navegador automatizado; falta en teléfono real)
 
 ## Fuera de esta fase
 - Backend compartido, autorización real, Wompi/DIAN reales, notificaciones y hardware físico: requieren una fase posterior autorizada.
