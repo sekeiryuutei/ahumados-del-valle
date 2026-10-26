@@ -54,7 +54,7 @@ La preliquidación **no es nómina oficial**. Parámetros faltantes o extras sin
 
 El manifiesto e iconos permiten instalar desde el navegador compatible en el sitio publicado. El worker de producción se genera con vite-plugin-pwa; no se registra en desarrollo, vista previa ni iframe y se puede desactivar con `?sw=off`. HTML visitado usa NetworkFirst; archivos de la app se almacenan en caché. La venta de ruta ya abierta funciona sin red y conserva cola/saldo local.
 
-**Pendiente externo:** verificar la apertura en frío sin conexión desde la app instalada en un sitio publicado; la vista previa deshabilita deliberadamente el worker. No afirmar esta comprobación como realizada. Las páginas nunca visitadas pueden requerir una primera apertura con conexión.
+**Comprobado en el sitio publicado:** el worker se instala, toma el control de la pestaña tras una primera apertura con conexión y, al desactivar la red, la página recargada muestra de nuevo el selector de portales. La prueba se hizo con un navegador de escritorio automatizado sobre la dirección publicada; falta repetirla en un teléfono real instalado. Las páginas nunca visitadas pueden requerir una primera apertura con conexión.
 
 ## Estructura y futuro proveedor real
 
