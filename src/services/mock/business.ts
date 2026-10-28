@@ -174,11 +174,19 @@ async function commitSale(input: SalesInput, paused: boolean): Promise<Sale> {
     "Las canastillas deben ser un número entero positivo.",
   );
   const id = input.draftId ?? uid("sale");
-  const next = Math.max(setting("receipt-start", 1) - 1, ...d.sales.filter(s => s.locationId === input.locationId).map(s => Number(s.number.split("-").at(-1)) || 0)) + 1;
-  const draft = d.sales.find(s => s.id === input.draftId);
+  const next =
+    Math.max(
+      setting("receipt-start", 1) - 1,
+      ...d.sales
+        .filter((s) => s.locationId === input.locationId)
+        .map((s) => Number(s.number.split("-").at(-1)) || 0),
+    ) + 1;
+  const draft = d.sales.find((s) => s.id === input.draftId);
   const sale: Sale = {
     id,
-    number: draft?.number ?? `#${input.locationId === "galeria" ? "GAL" : input.locationId === "ruta-1" ? "RUT" : "AHU"}-${next}`,
+    number:
+      draft?.number ??
+      `#${input.locationId === "galeria" ? "GAL" : input.locationId === "ruta-1" ? "RUT" : "AHU"}-${next}`,
     locationId: input.locationId,
     customerId: customer.id,
     items,
@@ -237,7 +245,7 @@ export const businessServices: BusinessServices = {
       const out = structuredClone(businessDb());
       const role = mockServices.auth.getSession()?.user.role;
       if (role !== "admin") out.settings = out.settings.filter((s) => s.id !== "surplus");
-      if (role !== "admin") out.versions = out.versions.filter(v => v.settingId !== "surplus");
+      if (role !== "admin") out.versions = out.versions.filter((v) => v.settingId !== "surplus");
       if (role === "superadmin") {
         const empty = structuredClone(out);
         for (const key of Object.keys(empty) as (keyof BusinessSnapshot)[])
@@ -249,18 +257,32 @@ export const businessServices: BusinessServices = {
       out.integrations = [];
       out.audit = out.audit.filter((a) => !a.technical);
       if (["recepcion", "planta", "vendedor", "ruta"].includes(role ?? "")) {
-        out.attendance = []; out.overtime = []; out.labor = []; out.employees = [];
-        out.propertyExpenses = []; out.imports = []; out.hardware = [];
-        out.settings = out.settings.filter(s => !["Laboral", "Arriendos"].includes(s.category));
-        const ids = new Set(out.settings.map(s => s.id));
-        out.versions = out.versions.filter(v => ids.has(v.settingId));
+        out.attendance = [];
+        out.overtime = [];
+        out.labor = [];
+        out.employees = [];
+        out.propertyExpenses = [];
+        out.imports = [];
+        out.hardware = [];
+        out.settings = out.settings.filter((s) => !["Laboral", "Arriendos"].includes(s.category));
+        const ids = new Set(out.settings.map((s) => s.id));
+        out.versions = out.versions.filter((v) => ids.has(v.settingId));
       }
       if (role === "recepcion" || role === "planta") {
-        out.sales = []; out.customers = []; out.closings = []; out.dispatches = []; out.settlements = [];
-        out.balances = out.balances.filter(b => b.locationId === "ahumadero");
-        out.movements = out.movements.filter(m => m.from === "ahumadero" || m.to === "ahumadero");
-        out.audit = out.audit.filter(a => ["Producción", "Recetas", "Inventario"].includes(a.module));
-        if (role === "recepcion") { out.recipes = []; out.seasonings = []; }
+        out.sales = [];
+        out.customers = [];
+        out.closings = [];
+        out.dispatches = [];
+        out.settlements = [];
+        out.balances = out.balances.filter((b) => b.locationId === "ahumadero");
+        out.movements = out.movements.filter((m) => m.from === "ahumadero" || m.to === "ahumadero");
+        out.audit = out.audit.filter((a) =>
+          ["Producción", "Recetas", "Inventario"].includes(a.module),
+        );
+        if (role === "recepcion") {
+          out.recipes = [];
+          out.seasonings = [];
+        }
       }
       if (role === "ruta") {
         out.sales = out.sales.filter((s) => s.locationId === "ruta-1");
@@ -271,7 +293,7 @@ export const businessServices: BusinessServices = {
         out.seasonings = [];
         out.attendance = [];
         out.employees = [];
-        out.settlements = out.settlements.map(s => ({ ...s, employeeSurplus: 0 }));
+        out.settlements = out.settlements.map((s) => ({ ...s, employeeSurplus: 0 }));
         out.purchases = [];
         out.audit = out.audit.filter((a) => ["Rutas", "Ventas"].includes(a.module));
       }
@@ -308,7 +330,14 @@ export const businessServices: BusinessServices = {
         refId: id,
         name: input.name,
       };
-      businessDb().employees.push({ name: input.name, role: input.role, hourlyRate: input.hourlyRate, id, username: key, active: true });
+      businessDb().employees.push({
+        name: input.name,
+        role: input.role,
+        hourlyRate: input.hourlyRate,
+        id,
+        username: key,
+        active: true,
+      });
       save();
       audit("Usuarios", "Empleado creado", id);
       commit();
@@ -809,13 +838,25 @@ export const businessServices: BusinessServices = {
           !businessDb().dispatches.some((d) => d.status === "en_ruta"),
         "Confirma la aceptación y cierra la ruta activa antes de despachar.",
       );
-      check(new Set(input.lines.map(l => l.productId)).size === input.lines.length, "Cada producto debe aparecer una sola vez en la carga.");
+      check(
+        new Set(input.lines.map((l) => l.productId)).size === input.lines.length,
+        "Cada producto debe aparecer una sola vez en la carga.",
+      );
       for (const line of input.lines)
         check(
-          businessDb().products.some(p => p.id === line.productId && p.active) && positive(line.loaded) && balance(line.productId, "ahumadero").quantity >= line.loaded && (line.grossGrams === undefined || line.loaded === netWeight(line.grossGrams, line.tareGrams ?? 0, line.boxes ?? 0)),
+          businessDb().products.some((p) => p.id === line.productId && p.active) &&
+            positive(line.loaded) &&
+            balance(line.productId, "ahumadero").quantity >= line.loaded &&
+            (line.grossGrams === undefined ||
+              line.loaded === netWeight(line.grossGrams, line.tareGrams ?? 0, line.boxes ?? 0)),
           "Carga superior al inventario.",
         );
-      const dispatch = { ...input, dispatchedAt: now(), id: uid("dispatch"), status: "en_ruta" as const };
+      const dispatch = {
+        ...input,
+        dispatchedAt: now(),
+        id: uid("dispatch"),
+        status: "en_ruta" as const,
+      };
       input.lines.forEach((l) =>
         move(
           l.productId,
@@ -839,13 +880,31 @@ export const businessServices: BusinessServices = {
         dispatch && dispatch.status === "en_ruta" && Number.isInteger(delivered) && delivered >= 0,
         "Revisa ruta y dinero entregado.",
       );
-      check(returns.length === dispatch.lines.length && new Set(returns.map(r => r.productId)).size === returns.length && returns.every(r => dispatch.lines.some(l => l.productId === r.productId)), "Devuelve cada producto de la carga una sola vez, sin productos ajenos.");
-      const { inventory, expected, routeSales } = reconcileRoute(dispatch, d.sales, d.products, returns);
+      check(
+        returns.length === dispatch.lines.length &&
+          new Set(returns.map((r) => r.productId)).size === returns.length &&
+          returns.every((r) => dispatch.lines.some((l) => l.productId === r.productId)),
+        "Devuelve cada producto de la carga una sola vez, sin productos ajenos.",
+      );
+      const { inventory, expected, routeSales } = reconcileRoute(
+        dispatch,
+        d.sales,
+        d.products,
+        returns,
+      );
       check(
         !routeSales.some((s) => s.syncStatus === "pendiente"),
         "Sincroniza las ventas pendientes antes de liquidar.",
       );
-      check(inventory.every(row => Number.isInteger(row.returned) && row.returned >= 0 && (row.returned <= row.loaded || row.state === "Intercambio de producto")), "Revisa devoluciones físicas.");
+      check(
+        inventory.every(
+          (row) =>
+            Number.isInteger(row.returned) &&
+            row.returned >= 0 &&
+            (row.returned <= row.loaded || row.state === "Intercambio de producto"),
+        ),
+        "Revisa devoluciones físicas.",
+      );
       const difference = delivered - expected;
       check(
         (difference === 0 && inventory.every((i) => i.state !== "Requiere revisión")) ||
@@ -857,7 +916,18 @@ export const businessServices: BusinessServices = {
         if (row.difference) {
           const adjustment = row.returned - remaining;
           balance(row.productId, "ruta-1").quantity = row.returned;
-          d.movements.unshift({ id: uid("mv"), productId: row.productId, quantity: Math.abs(adjustment), from: adjustment < 0 ? "ruta-1" : null, to: adjustment > 0 ? "ruta-1" : null, type: "ajuste", reference: dispatchId, reason: `${row.state}: ${reason || "Pérdida dentro de tolerancia"}`, actor: actor(), createdAt: now() });
+          d.movements.unshift({
+            id: uid("mv"),
+            productId: row.productId,
+            quantity: Math.abs(adjustment),
+            from: adjustment < 0 ? "ruta-1" : null,
+            to: adjustment > 0 ? "ruta-1" : null,
+            type: "ajuste",
+            reference: dispatchId,
+            reason: `${row.state}: ${reason || "Pérdida dentro de tolerancia"}`,
+            actor: actor(),
+            createdAt: now(),
+          });
           audit("Rutas", row.state, dispatchId, reason, String(remaining), String(row.returned));
         }
         if (row.returned)
@@ -931,8 +1001,11 @@ export const businessServices: BusinessServices = {
               isIsoDate(r.date) &&
               /^([01]\d|2[0-3]):[0-5]\d$/.test(r.entry) &&
               /^([01]\d|2[0-3]):[0-5]\d$/.test(r.exit) &&
-              r.hours > 0 && r.hours < 24 &&
-              Number.isFinite(r.overtimeHours) && r.overtimeHours >= 0 && r.overtimeHours <= r.hours,
+              r.hours > 0 &&
+              r.hours < 24 &&
+              Number.isFinite(r.overtimeHours) &&
+              r.overtimeHours >= 0 &&
+              r.overtimeHours <= r.hours,
           ),
         "Revisa empleados y horarios.",
       );
@@ -956,7 +1029,11 @@ export const businessServices: BusinessServices = {
     async authorize(employeeId, period, hours, reason) {
       allow("admin");
       check(
-        Number.isFinite(hours) && hours > 0 && /^\d{4}-(0[1-9]|1[0-2])$/.test(period) && reason.trim() && businessDb().employees.some((e) => e.id === employeeId),
+        Number.isFinite(hours) &&
+          hours > 0 &&
+          /^\d{4}-(0[1-9]|1[0-2])$/.test(period) &&
+          reason.trim() &&
+          businessDb().employees.some((e) => e.id === employeeId),
         "Revisa empleado, horas y motivo.",
       );
       businessDb().overtime.push({ id: uid("extra"), employeeId, period, hours, reason });
@@ -968,7 +1045,10 @@ export const businessServices: BusinessServices = {
     async update(id, value, reason, effectiveFrom) {
       allow("admin");
       const s = businessDb().settings.find((s) => s.id === id);
-      check(s && reason.trim() && isIsoDate(effectiveFrom), "Configuración, fecha válida y motivo obligatorios.");
+      check(
+        s && reason.trim() && isIsoDate(effectiveFrom),
+        "Configuración, fecha válida y motivo obligatorios.",
+      );
       if (
         s.unit === "COP" ||
         s.unit === "g" ||
@@ -980,9 +1060,18 @@ export const businessServices: BusinessServices = {
           value === "" || (Number.isFinite(Number(value)) && Number(value) >= 0),
           "Usa un valor numérico no negativo.",
         );
-      if (["COP", "g", "días"].includes(s.unit)) check(value === "" || Number.isInteger(Number(value)), "Pesos, gramos y días deben ser enteros.");
-      if (s.unit === "%") check(value === "" || Number(value) <= 100, "El porcentaje no puede superar 100.");
-      if (s.unit === "hora") check(value === "" || /^([01]\d|2[0-3]):[0-5]\d$/.test(value), "Escribe la hora en formato HH:MM.");
+      if (["COP", "g", "días"].includes(s.unit))
+        check(
+          value === "" || Number.isInteger(Number(value)),
+          "Pesos, gramos y días deben ser enteros.",
+        );
+      if (s.unit === "%")
+        check(value === "" || Number(value) <= 100, "El porcentaje no puede superar 100.");
+      if (s.unit === "hora")
+        check(
+          value === "" || /^([01]\d|2[0-3]):[0-5]\d$/.test(value),
+          "Escribe la hora en formato HH:MM.",
+        );
       businessDb().versions.unshift({
         id: uid("v"),
         settingId: id,

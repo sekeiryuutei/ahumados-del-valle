@@ -1,4 +1,13 @@
-import { AlertTriangle, CheckCircle2, Clock, Loader2, RotateCcw, Wrench, XCircle, Home } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  RotateCcw,
+  Wrench,
+  XCircle,
+  Home,
+} from "lucide-react";
 import type { PaymentStatus, PropertyStatus } from "@/domain/types";
 import { cn } from "@/lib/utils";
 
@@ -12,9 +21,25 @@ const tones: Record<Tone, string> = {
   info: "bg-accent text-accent-foreground border-primary/20",
 };
 
-export function Pill({ tone, icon: Icon, children, className }: { tone: Tone; icon?: typeof Clock; children: React.ReactNode; className?: string }) {
+export function Pill({
+  tone,
+  icon: Icon,
+  children,
+  className,
+}: {
+  tone: Tone;
+  icon?: typeof Clock;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold", tones[tone], className)}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
+        tones[tone],
+        className,
+      )}
+    >
       {Icon && <Icon className="size-3.5" aria-hidden />}
       {children}
     </span>
@@ -31,7 +56,11 @@ const paymentMap: Record<PaymentStatus, { tone: Tone; label: string; icon: typeo
 
 export function PaymentBadge({ status }: { status: PaymentStatus }) {
   const s = paymentMap[status];
-  return <Pill tone={s.tone} icon={s.icon}>{s.label}</Pill>;
+  return (
+    <Pill tone={s.tone} icon={s.icon}>
+      {s.label}
+    </Pill>
+  );
 }
 
 const propertyMap: Record<PropertyStatus, { tone: Tone; label: string; icon: typeof Clock }> = {
@@ -42,9 +71,17 @@ const propertyMap: Record<PropertyStatus, { tone: Tone; label: string; icon: typ
 
 export function PropertyBadge({ status }: { status: PropertyStatus }) {
   const s = propertyMap[status];
-  return <Pill tone={s.tone} icon={s.icon}>{s.label}</Pill>;
+  return (
+    <Pill tone={s.tone} icon={s.icon}>
+      {s.label}
+    </Pill>
+  );
 }
 
 export function DemoBadge() {
-  return <Pill tone="info" icon={AlertTriangle}>Demostración</Pill>;
+  return (
+    <Pill tone="info" icon={AlertTriangle}>
+      Demostración
+    </Pill>
+  );
 }

@@ -41,11 +41,19 @@ export function RoutesPage() {
   const [reason, setReason] = useState("");
   const queue = useQuery({ queryKey: ["route-queue"], queryFn: () => services.routes.queue() });
   const active = d.dispatches.find((x) => x.id === settle);
-  const selectedProduct = d.products.find(p => p.id === product);
-  const tare = Number(d.settings.find(s => s.id === "tare")?.value || 0);
+  const selectedProduct = d.products.find((p) => p.id === product);
+  const tare = Number(d.settings.find((s) => s.id === "tare")?.value || 0);
   const net = selectedProduct?.control === "unidad" ? quantity : netWeight(gross, tare, boxes);
-  const preview = active ? reconcileRoute(active, d.sales, d.products, Object.entries(returns).map(([productId, quantity]) => ({ productId, quantity }))) : null;
-  const quantityLabel = (id: string, value: number) => d.products.find(p => p.id === id)?.control === "unidad" ? `${value} und` : formatKg(value);
+  const preview = active
+    ? reconcileRoute(
+        active,
+        d.sales,
+        d.products,
+        Object.entries(returns).map(([productId, quantity]) => ({ productId, quantity })),
+      )
+    : null;
+  const quantityLabel = (id: string, value: number) =>
+    d.products.find((p) => p.id === id)?.control === "unidad" ? `${value} und` : formatKg(value);
   return (
     <>
       <PageHeader
@@ -151,7 +159,9 @@ export function RoutesPage() {
               value={formatCOP(s.difference)}
               tone={s.difference < 0 ? "warning" : "success"}
             />
-            {session?.user.role === "admin" && <Stat label="Participación del empleado" value={formatCOP(s.employeeSurplus)} />}
+            {session?.user.role === "admin" && (
+              <Stat label="Participación del empleado" value={formatCOP(s.employeeSurplus)} />
+            )}
           </div>
           <h3 className="my-4 font-bold">1. Inventario físico</h3>
           <Table
@@ -170,9 +180,18 @@ export function RoutesPage() {
               </tr>
             ))}
           </Table>
-          <h3 className="mt-4 font-bold">2. Dinero entregado: {formatCOP(s.difference)} de diferencia</h3>
+          <h3 className="mt-4 font-bold">
+            2. Dinero entregado: {formatCOP(s.difference)} de diferencia
+          </h3>
           <h3 className="mt-4 font-bold">3. Descongelamiento y revisión</h3>
-          {s.inventory.filter(i => i.difference !== 0).map(i => <p key={i.productId} className="py-2 text-sm">{d.products.find(p => p.id === i.productId)?.name}: {quantityLabel(i.productId, i.difference)} · {i.state}</p>)}
+          {s.inventory
+            .filter((i) => i.difference !== 0)
+            .map((i) => (
+              <p key={i.productId} className="py-2 text-sm">
+                {d.products.find((p) => p.id === i.productId)?.name}:{" "}
+                {quantityLabel(i.productId, i.difference)} · {i.state}
+              </p>
+            ))}
           <p className="mt-2 text-xs text-muted-foreground">
             Diferencias físicas en gramos/unidades · Las pérdidas normales no generan cobro
             automático.
@@ -219,19 +238,42 @@ export function RoutesPage() {
             onChange={setProduct}
             options={d.products}
           />
-          {selectedProduct?.control === "unidad" ? <NumberField label="Unidades de carga" value={quantity} onChange={setQuantity} /> : <><NumberField label="Peso bruto de carga · g" value={gross} onChange={setGross} /><NumberField label="Cajas de carga" value={boxes} onChange={setBoxes} /><p className="border-y py-3">Tara: {formatKg(tare)} por caja · <strong>Neto: {formatKg(net)}</strong></p></>}
+          {selectedProduct?.control === "unidad" ? (
+            <NumberField label="Unidades de carga" value={quantity} onChange={setQuantity} />
+          ) : (
+            <>
+              <NumberField label="Peso bruto de carga · g" value={gross} onChange={setGross} />
+              <NumberField label="Cajas de carga" value={boxes} onChange={setBoxes} />
+              <p className="border-y py-3">
+                Tara: {formatKg(tare)} por caja · <strong>Neto: {formatKg(net)}</strong>
+              </p>
+            </>
+          )}
           <Button
             type="button"
             variant="outline"
-            disabled={net <= 0 || lines.some(l => l.productId === product)}
-            onClick={() => setLines([...lines, { productId: product, loaded: net, returned: 0, ...(selectedProduct?.control === "unidad" ? {} : { grossGrams: gross, tareGrams: tare, boxes }) }])}
+            disabled={net <= 0 || lines.some((l) => l.productId === product)}
+            onClick={() =>
+              setLines([
+                ...lines,
+                {
+                  productId: product,
+                  loaded: net,
+                  returned: 0,
+                  ...(selectedProduct?.control === "unidad"
+                    ? {}
+                    : { grossGrams: gross, tareGrams: tare, boxes }),
+                },
+              ])
+            }
           >
             <Plus />
             Agregar carga
           </Button>
           {lines.map((l, i) => (
             <div className="flex justify-between text-sm" key={i}>
-              {d.products.find((p) => p.id === l.productId)?.name} · {quantityLabel(l.productId, l.loaded)}
+              {d.products.find((p) => p.id === l.productId)?.name} ·{" "}
+              {quantityLabel(l.productId, l.loaded)}
               <Button
                 type="button"
                 variant="ghost"
@@ -270,7 +312,16 @@ export function RoutesPage() {
           }}
         >
           <h3 className="font-bold">1. Inventario: carga − ventas − devolución</h3>
-          {preview?.inventory.map(i => <div key={i.productId} className="border-b py-2 text-sm"><strong>{d.products.find(p => p.id === i.productId)?.name}</strong><p>{quantityLabel(i.productId, i.loaded)} − {quantityLabel(i.productId, i.sold)} − {quantityLabel(i.productId, i.returned)} = {quantityLabel(i.productId, i.difference)}</p></div>)}
+          {preview?.inventory.map((i) => (
+            <div key={i.productId} className="border-b py-2 text-sm">
+              <strong>{d.products.find((p) => p.id === i.productId)?.name}</strong>
+              <p>
+                {quantityLabel(i.productId, i.loaded)} − {quantityLabel(i.productId, i.sold)} −{" "}
+                {quantityLabel(i.productId, i.returned)} ={" "}
+                {quantityLabel(i.productId, i.difference)}
+              </p>
+            </div>
+          ))}
           {active?.lines.map((l) => (
             <NumberField
               key={l.productId}
@@ -281,12 +332,32 @@ export function RoutesPage() {
           ))}
           <h3 className="font-bold">2. Dinero: ventas por medio de pago</h3>
           <p>Efectivo esperado: {formatCOP(preview?.expected ?? 0)}</p>
-          {(["nequi", "bancolombia", "tarjeta", "fiado"] as const).map(method => <p key={method} className="text-sm capitalize">{method}: {formatCOP(preview?.routeSales.flatMap(s => s.payments).filter(p => p.method === method).reduce((sum, p) => sum + p.amount, 0) ?? 0)}</p>)}
+          {(["nequi", "bancolombia", "tarjeta", "fiado"] as const).map((method) => (
+            <p key={method} className="text-sm capitalize">
+              {method}:{" "}
+              {formatCOP(
+                preview?.routeSales
+                  .flatMap((s) => s.payments)
+                  .filter((p) => p.method === method)
+                  .reduce((sum, p) => sum + p.amount, 0) ?? 0,
+              )}
+            </p>
+          ))}
           <NumberField label="Efectivo entregado · COP" value={cash} onChange={setCash} />
-          <p>Diferencia de dinero: <strong>{formatCOP(cash - (preview?.expected ?? 0))}</strong></p>
+          <p>
+            Diferencia de dinero: <strong>{formatCOP(cash - (preview?.expected ?? 0))}</strong>
+          </p>
           <h3 className="font-bold">3. Descongelamiento y diferencias físicas</h3>
-          {preview?.inventory.map(i => <p key={i.productId} className="text-sm">{d.products.find(p => p.id === i.productId)?.name}: <Status warning={i.state === "Requiere revisión"}>{i.state}</Status></p>)}
-          <p className="text-xs text-muted-foreground">Tolerancia del producto aplicada. No se descuenta dinero automáticamente por pérdidas normales.</p>
+          {preview?.inventory.map((i) => (
+            <p key={i.productId} className="text-sm">
+              {d.products.find((p) => p.id === i.productId)?.name}:{" "}
+              <Status warning={i.state === "Requiere revisión"}>{i.state}</Status>
+            </p>
+          ))}
+          <p className="text-xs text-muted-foreground">
+            Tolerancia del producto aplicada. No se descuenta dinero automáticamente por pérdidas
+            normales.
+          </p>
           <Field label="Motivo de diferencias y responsable">
             <Input value={reason} onChange={(e) => setReason(e.target.value)} />
           </Field>

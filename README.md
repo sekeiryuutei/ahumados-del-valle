@@ -1,10 +1,10 @@
-# Ahumados del Valle
+﻿# Ahumados del Valle
 
 Frontend funcional de demostración. Inquilinos y ahumadero tienen entradas separadas; cada oficio abre su propio panel. Conductor y vendedor de ruta comparten **Empleados de ruta**.
 
 ## Ejecución local
 
-Requiere Bun. Desde la carpeta del proyecto:
+Requiere Bun, o Node.js 22+ con npm. Desde la carpeta del proyecto:
 
 ```sh
 bun install
@@ -12,23 +12,21 @@ bun run dev
 bun run test
 ```
 
-En Lovable la vista previa se actualiza automáticamente; no requiere iniciar otro servidor.
-
 ## Perfiles de prueba
 
 Estas claves son públicas, ficticias y exclusivas de la demostración. El botón «Usar usuario de prueba» completa el perfil elegido.
 
-| Cargo | Usuario | Clave demo | Panel |
-| --- | --- | --- | --- |
-| Administración | admin | admin123 | /admin |
-| Contador | contador | contador123 | /contador |
-| Recepción de cajas | recepcion | recepcion123 | /recepcion |
-| Vendedor de galería | galeria | galeria123 | /galeria |
-| Empleados de ruta | ruta | ruta123 | /ruta |
-| Operario de ahumado | planta | planta123 | /planta |
-| Administración técnica | tecnico | tecnico123 | /superadmin |
-| Inquilina | maria | maria123 | /inquilino |
-| Segundo inquilino | donjulio | julio123 | /inquilino |
+| Cargo                  | Usuario   | Clave demo   | Panel       |
+| ---------------------- | --------- | ------------ | ----------- |
+| Administración         | admin     | admin123     | /admin      |
+| Contador               | contador  | contador123  | /contador   |
+| Recepción de cajas     | recepcion | recepcion123 | /recepcion  |
+| Vendedor de galería    | galeria   | galeria123   | /galeria    |
+| Empleados de ruta      | ruta      | ruta123      | /ruta       |
+| Operario de ahumado    | planta    | planta123    | /planta     |
+| Administración técnica | tecnico   | tecnico123   | /superadmin |
+| Inquilina              | maria     | maria123     | /inquilino  |
+| Segundo inquilino      | donjulio  | julio123     | /inquilino  |
 
 La administración crea empleados e inquilinos adicionales. El inquilino solo consulta su contrato/saldo, paga y ve historial y espacios disponibles. El técnico no obtiene acceso al negocio por ser superadministrador.
 
@@ -55,6 +53,22 @@ La preliquidación **no es nómina oficial**. Parámetros faltantes o extras sin
 El manifiesto e iconos permiten instalar desde el navegador compatible en el sitio publicado. El worker de producción se genera con vite-plugin-pwa; no se registra en desarrollo, vista previa ni iframe y se puede desactivar con `?sw=off`. HTML visitado usa NetworkFirst; archivos de la app se almacenan en caché. La venta de ruta ya abierta funciona sin red y conserva cola/saldo local.
 
 **Comprobado en el sitio publicado:** el worker se instala, toma el control de la pestaña tras una primera apertura con conexión y, al desactivar la red, la página recargada muestra de nuevo el selector de portales. La prueba se hizo con un navegador de escritorio automatizado sobre la dirección publicada; falta repetirla en un teléfono real instalado. Las páginas nunca visitadas pueden requerir una primera apertura con conexión.
+
+## Publicación en GitHub Pages
+
+La demo puede publicarse sin túnel como sitio estático. El flujo `.github/workflows/deploy-pages.yml` genera un build SPA, lo publica en GitHub Pages y conserva las rutas profundas mediante `404.html`.
+
+1. En GitHub, abrir **Settings → Pages** y elegir **Source: GitHub Actions**.
+2. Hacer `push` a `main` o ejecutar manualmente el workflow **Deploy demo to GitHub Pages**.
+3. La URL será `https://<usuario>.github.io/<repositorio>/`; este repositorio usa `https://sekeiryuutei.github.io/ahumados-del-valle/`.
+
+Para probar el build localmente:
+
+```sh
+npm run build:pages
+```
+
+El resultado queda en `.output/public`. En local se deben copiar `_shell.html` a `index.html` y `404.html`; el workflow lo hace automáticamente. GitHub Pages solo aloja el frontend de demostración: el backend PostgreSQL, la API, los secretos y los procesos de servidor necesitan otro hosting. El build de Pages no registra service worker para evitar cachés obsoletas; el build normal del túnel sí lo conserva.
 
 ## Estructura y futuro proveedor real
 

@@ -539,8 +539,10 @@ export function CashPage({ location = "galeria" }: { location?: LocationId }) {
   const d = useBusiness();
   const { run, busy } = useAction();
   const [counted, setCounted] = useState(0);
-  const lastClose = d.closings.find(c => c.locationId === location)?.createdAt ?? "";
-  const sales = d.sales.filter((s) => s.locationId === location && s.status === "pagada" && s.createdAt > lastClose);
+  const lastClose = d.closings.find((c) => c.locationId === location)?.createdAt ?? "";
+  const sales = d.sales.filter(
+    (s) => s.locationId === location && s.status === "pagada" && s.createdAt > lastClose,
+  );
   const totals = methods.map((m) => ({
     method: m,
     total: sales

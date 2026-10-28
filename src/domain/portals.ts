@@ -22,7 +22,14 @@ export const roleLabels: Record<Role, string> = {
   superadmin: "Administración técnica",
 };
 
-export const employeeRoles = ["admin", "recepcion", "contador", "ruta", "vendedor", "planta"] as const;
+export const employeeRoles = [
+  "admin",
+  "recepcion",
+  "contador",
+  "ruta",
+  "vendedor",
+  "planta",
+] as const;
 
 export function matchesPortal(role: Role, portal: "inquilino" | "ahumadero" | Role): boolean {
   if (portal === "ahumadero") return role !== "inquilino";

@@ -9,6 +9,7 @@ export { ServiceError } from "./contracts";
 export type * from "./contracts";
 
 export function errorMessage(e: unknown): string {
-  if (e && typeof e === "object" && "userMessage" in e) return String((e as { userMessage: string }).userMessage);
+  if (e && typeof e === "object" && "userMessage" in e)
+    return String((e as { userMessage: string }).userMessage);
   return "Algo no salió bien. Intenta de nuevo en un momento.";
 }

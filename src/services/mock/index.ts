@@ -54,7 +54,10 @@ function rentalAccess(tenantId?: string) {
   if (tenantId && user?.role === "inquilino" && user.tenantId === tenantId) return;
   throw new ServiceError("validacion", "Tu usuario no tiene acceso a estos datos.");
 }
-function rentalAdmin() { if (readSession()?.user.role !== "admin") throw new ServiceError("validacion", "Solo la administración puede hacer este cambio."); }
+function rentalAdmin() {
+  if (readSession()?.user.role !== "admin")
+    throw new ServiceError("validacion", "Solo la administración puede hacer este cambio.");
+}
 
 export const mockServices: RentalServices = {
   auth: {
@@ -62,12 +65,24 @@ export const mockServices: RentalServices = {
       await delay(400);
       const key = username.trim().toLowerCase();
       const cred = db().credentials[key];
-      if (!cred || cred.active === false || cred.password !== password || !matchesPortal(cred.role, portal)) {
-        throw new ServiceError("credenciales", "Usuario o clave incorrectos. Revisa e intenta de nuevo.");
+      if (
+        !cred ||
+        cred.active === false ||
+        cred.password !== password ||
+        !matchesPortal(cred.role, portal)
+      ) {
+        throw new ServiceError(
+          "credenciales",
+          "Usuario o clave incorrectos. Revisa e intenta de nuevo.",
+        );
       }
       if (cred.role === "inquilino") {
         const t = db().tenants.find((x) => x.id === cred.refId);
-        if (!t?.active) throw new ServiceError("credenciales", "Tu acceso está desactivado. Comunícate con la administración.");
+        if (!t?.active)
+          throw new ServiceError(
+            "credenciales",
+            "Tu acceso está desactivado. Comunícate con la administración.",
+          );
       }
       const session: Session = {
         user: {
@@ -95,10 +110,15 @@ export const mockServices: RentalServices = {
   properties: {
     async list(filter) {
       const role = readSession()?.user.role;
-      if (role !== "admin" && role !== "contador" && role !== "inquilino") throw new ServiceError("validacion", "Tu cargo no tiene acceso a los locales.");
+      if (role !== "admin" && role !== "contador" && role !== "inquilino")
+        throw new ServiceError("validacion", "Tu cargo no tiene acceso a los locales.");
       await delay();
       const tenant = readSession()?.user.role === "inquilino";
-      return structuredClone(db().properties.filter((p) => tenant ? p.status === "disponible" : !filter?.status || p.status === filter.status));
+      return structuredClone(
+        db().properties.filter((p) =>
+          tenant ? p.status === "disponible" : !filter?.status || p.status === filter.status,
+        ),
+      );
     },
     async create(input) {
       rentalAdmin();
@@ -138,7 +158,8 @@ export const mockServices: RentalServices = {
       await delay(400);
       const d = db();
       const username = input.username.trim().toLowerCase();
-      if (d.credentials[username]) throw new ServiceError("conflicto", "Ese usuario ya está en uso. Elige otro.");
+      if (d.credentials[username])
+        throw new ServiceError("conflicto", "Ese usuario ya está en uso. Elige otro.");
       const property = d.properties.find((p) => p.id === input.propertyId);
       if (!property || property.status !== "disponible")
         throw new ServiceError("validacion", "El local elegido ya no está disponible.");
@@ -153,7 +174,12 @@ export const mockServices: RentalServices = {
         createdAt: new Date().toISOString(),
       };
       d.tenants.push(tenant);
-      d.credentials[username] = { password: input.password, role: "inquilino", refId: tenant.id, name: tenant.name };
+      d.credentials[username] = {
+        password: input.password,
+        role: "inquilino",
+        refId: tenant.id,
+        name: tenant.name,
+      };
       d.leases.push({
         id: uid("l"),
         tenantId: tenant.id,
@@ -216,7 +242,8 @@ export const mockServices: RentalServices = {
       rentalAdmin();
       await delay(350);
       const acc = account(input.tenantId);
-      if (!acc.lease) throw new ServiceError("validacion", "Este inquilino no tiene contrato vigente.");
+      if (!acc.lease)
+        throw new ServiceError("validacion", "Este inquilino no tiene contrato vigente.");
       if (!acc.pending.some((p) => p.period === input.period))
         throw new ServiceError("conflicto", "Ese mes ya está pagado.");
       const pay: RentPayment = {
@@ -272,7 +299,8 @@ export const mockServices: RentalServices = {
       const p = db().payments.find((x) => x.id === id);
       if (!p) throw new ServiceError("no_encontrado", "No encontramos este pago.");
       rentalAccess(p.tenantId);
-      if (p.status !== "en_proceso") throw new ServiceError("conflicto", "Este pago ya tiene un resultado.");
+      if (p.status !== "en_proceso")
+        throw new ServiceError("conflicto", "Este pago ya tiene un resultado.");
       p.status = result;
       save();
       return p;
@@ -292,7 +320,10 @@ export const mockServices: RentalServices = {
       rentalAdmin();
       await delay();
       if (!Number.isInteger(amount) || amount < 0)
-        throw new ServiceError("validacion", "El recargo debe ser un valor en pesos sin decimales.");
+        throw new ServiceError(
+          "validacion",
+          "El recargo debe ser un valor en pesos sin decimales.",
+        );
       const d = db();
       const next = {
         amount,

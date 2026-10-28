@@ -56,7 +56,12 @@ export function attendanceRows(parsed: ReturnType<typeof parseCsv>, employeeIds:
     const exit = row["exit"] ?? "";
     const hours = ((minutes(exit) - minutes(entry) + 1440) % 1440) / 60;
     const overtimeHours = Number(row["overtimeHours"] || 0);
-    if (hours <= 0 || !Number.isFinite(overtimeHours) || overtimeHours < 0 || overtimeHours > hours) {
+    if (
+      hours <= 0 ||
+      !Number.isFinite(overtimeHours) ||
+      overtimeHours < 0 ||
+      overtimeHours > hours
+    ) {
       errors.push(`Fila ${i + 2}: extras superiores a horas trabajadas`);
       return;
     }
